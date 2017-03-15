@@ -344,7 +344,7 @@ public class CellUtils {
 			sumLR += pfm.getScorePFM(DNAseq[DNApos+i+sizeLeft], i, bpFreq[DNAseq[DNApos+i+sizeLeft]]);
 			sumMax += pfm.getMaxScorePFM(i);
 		}
-		 return sumLR - sumMax;
+		 return -(sumLR - sumMax);
 
 	}
 
@@ -404,7 +404,7 @@ public class CellUtils {
 			sumRL += pfm.getScorePFM(revComplement[i], i, bpFreq[revComplement[i]]);
 			sumMax += pfm.getMaxScorePFM(i);
 		}
-		 return sumRL - sumMax;
+		 return -(sumRL - sumMax);
 	}
 	
 	
