@@ -164,7 +164,9 @@ public class TargetSitesGroup   implements Serializable{
 	 * @param time the current time
 	 */
 	public void updateOccupancyStatistics(double time){
-		this.timeOccupied+=Math.abs(time-this.lastTimeUpdate);
+		if (time > this.lastTimeUpdate){
+			this.timeOccupied+=time-this.lastTimeUpdate;
+		}
 	}
 
 	/**
