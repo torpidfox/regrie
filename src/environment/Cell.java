@@ -1484,7 +1484,7 @@ public class Cell implements Serializable {
 	 */
 	public void  printTargetSitesTimesOccupied(int postition, double timeBound){
 		//AD:
-		if(true){
+		if(false){
 			BufferedWriter bufferFile =  null;
 	        try {
 	            //Construct the BufferedWriter object
@@ -1678,7 +1678,7 @@ public class Cell implements Serializable {
 			this.tsg.updateTargetSiteStatistics(tsID, time, bound, timeBound);
 
 			//TODO: true must be a parameter
-			if (true && !bound && timeBound > 0){
+			if (false && !bound && timeBound > 0){
 
 				BufferedWriter statusBuffer =  null;
 				try {
