@@ -207,7 +207,9 @@ public class TF extends DBP  implements Serializable {
 		String str="";
 		if(blockingMolecule == Constants.NONE){
 			str+="ouside the strand";
-		} else{
+		} else if(blockingMolecule == Constants.REPRESSED){
+			str+="repressed";
+		} else {
 			str+="blocked by molecule "+blockingMolecule;
 			str+=" (TF "+n.TFspecies[n.dbp[blockingMolecule].speciesID].name+")";
 		}
@@ -616,7 +618,12 @@ public class TF extends DBP  implements Serializable {
 		
 		if(bound!=this.ID){
 				if(bound!=Constants.NONE){
-					n.dna.collisionsCount[newPosition]++;
+					if (bound==Constants.REPRESSED){
+						//TODO
+						//n.dna.repressionEventsCount[newPosition]++;
+					} else{
+						n.dna.collisionsCount[newPosition]++;
+					}
 				}
 				bound = Constants.NONE;
 				

@@ -74,3 +74,12 @@ for (fname in filenames){
 
 tsid1
 
+v1 = c(1:100,152)
+v2 = c(1:100,-5)
+
+library(ggplot2)
+
+ggplot(data.frame(value1 = v1, value2 = "value"), aes(x = value2, y = value1)) +
+    geom_boxplot()
+
+?geom_boxplot

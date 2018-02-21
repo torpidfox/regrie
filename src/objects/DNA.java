@@ -1,9 +1,5 @@
 package objects;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
 import environment.Cell;
@@ -11,6 +7,8 @@ import environment.Cell;
 import utils.CellUtils;
 import utils.Constants;
 import utils.Utils;
+
+import static utils.CellUtils.bps;
 
 /**
  * a class that stores informations on DNA strand and affinities of TFs for DNA
@@ -107,7 +105,7 @@ public class DNA  implements Serializable{
 		setOccupancyVectorFree(n);
 		isRandom = true;	
 	}
-	
+
 	
 	/**
 	 * class constructor 
@@ -115,6 +113,7 @@ public class DNA  implements Serializable{
 	 */
 	public DNA(Cell n, DNA dna){		
 		parseDescription(dna.description, dna.strand.length,"");
+
 		int start = (int) (this.subsequence.start - this.region.start);
 		int end = (int) Math.min(Math.min(this.subsequence.end-this.region.start, this.region.end-this.region.start),dna.strand.length+start);
 
@@ -261,19 +260,49 @@ public class DNA  implements Serializable{
 				}
 			}
 		} else if (mode == 1){
-			for(int i = startPosition; i < endPosition; i++){
-				if (dna.chromatin[i] & (i < this.codingRegion.start || i > this.codingRegion.end)){
+
+			for(int i = startPosition+1; i < this.codingRegion.start; i++){
+				if (i < this.codingRegion.start-1 & dna.chromatin[i] & !dna.chromatin[i-1]){
 					indices.add(i);
-					while (dna.chromatin[i] & (i < this.codingRegion.start || i > this.codingRegion.end)){
-						i++;
-					}
-					if (indices.get(indices.size() - 1) == i - 1){
-						indices.remove(indices.size() - 1);
-					} else {
-						indices.add(i - 1);
-					}
+				} else if (i < this.codingRegion.start-1 & !dna.chromatin[i] & dna.chromatin[i-1]){
+					indices.add(i-1);
+				} else if (i == this.codingRegion.start-1 & dna.chromatin[i] & !dna.chromatin[i-1]){
+					indices.add(i);
+					indices.add(i);
+				} else if (i == this.codingRegion.start-1 & !dna.chromatin[i] & dna.chromatin[i-1]){
+					indices.add(i-1);
+				} else if (i == this.codingRegion.start-1 & dna.chromatin[i] & dna.chromatin[i-1]){
+					indices.add(i);
 				}
 			}
+
+			for(int i = (int) this.codingRegion.end+1; i < endPosition; i++){
+				if (i < endPosition-1 & dna.chromatin[i] & !dna.chromatin[i-1]){
+					indices.add(i);
+				} else if (i < endPosition-1 & !dna.chromatin[i] & dna.chromatin[i-1]){
+					indices.add(i-1);
+				} else if (i == endPosition-1 & dna.chromatin[i] & !dna.chromatin[i-1]){
+					indices.add(i);
+					indices.add(i);
+				} else if (i == endPosition-1 & !dna.chromatin[i] & dna.chromatin[i-1]){
+					indices.add(i-1);
+				} else if (i == endPosition-1 & dna.chromatin[i] & dna.chromatin[i-1]){
+					indices.add(i);
+				}
+			}
+//			for(int i = startPosition; i < endPosition; i++){
+//				if (dna.chromatin[i] & (i < this.codingRegion.start || i > this.codingRegion.end)){
+//					indices.add(i);
+//					while (i < endPosition-1 & dna.chromatin[i] & (i < this.codingRegion.start || i > this.codingRegion.end)){
+//						i++;
+//					}
+//					if (indices.get(indices.size() - 1) == i - 1){
+//						indices.remove(indices.size() - 1);
+//					} else {
+//						indices.add(i - 1);
+//					}
+//				}
+//			}
 		}
 	}
 	
@@ -418,12 +447,12 @@ public class DNA  implements Serializable{
 	private void computeBPfreq(){
 		//count bp
 		//init
-		long[] countBP=new long[CellUtils.bps.numberOfBP];
+		long[] countBP=new long[bps.numberOfBP];
 		for(int i=0;i<countBP.length;i++){
 			countBP[i]=0;
 		}
 		
-		bpFreq = new double[CellUtils.bps.numberOfBP];
+		bpFreq = new double[bps.numberOfBP];
 		for(int i=0;i<countBP.length;i++){
 			bpFreq[i]=0;
 		}
@@ -735,7 +764,40 @@ public class DNA  implements Serializable{
 				}
 				
 			}
-			
+
+
+//			debug printing
+
+//			System.out.println(n.tsg.ts.size());
+//
+//			ArrayList<String> TSenergiesInfo = new ArrayList<>();
+//			ArrayList<Double> TSenergies = new ArrayList<>();
+//			for (TargetSite ts: n.tsg.ts){
+//				String TSinfo = "";
+//				double TSenergy = 0.;
+//				TSinfo += ts.TFname + " " + String.valueOf(ts.relStart) + " " + String.valueOf(ts.region.direction) + " ";
+//
+//				if (ts.region.direction == 0){
+//					TSenergy = CellUtils.computeTFAffinityLR(strand, ts.relStart, TFspecies[ts.TFid].pfm, TFspecies[ts.TFid].sizeLeft, TFspecies[ts.TFid].es, this.bpFreq);
+//				} else if (ts.region.direction == 1){
+//					TSenergy = CellUtils.computeTFAffinityRL(strand, ts.relStart, TFspecies[ts.TFid].pfm, TFspecies[ts.TFid].sizeLeft, TFspecies[ts.TFid].es, this.bpFreq);
+//				}
+//
+//				TSinfo += String.valueOf(TSenergy);
+//				TSenergies.add(TSenergy);
+//
+//				TSenergiesInfo.add(TSinfo);
+//			}
+//
+//			try{
+//				PrintWriter writer = new PrintWriter("/Users/dmitrav/Politech/Laboratory/StoсhasticModelling/reGRiE2/pwm_energies.txt", "UTF-8");
+//				for (String info: TSenergiesInfo){
+//					writer.println(info);
+//				}
+//				writer.close();
+//			} catch (IOException e) {
+//				// do something
+//			}
 			
 			
 			
@@ -1179,7 +1241,7 @@ public class DNA  implements Serializable{
 			canUnbind = true;
 			
 			
-			freeDNA(n, position,size);
+			freeDNA(n, position, size, position);
 			recomputeTFAffinityLandscapeOnUnbinding(n,position,size);
 		}
 		return canUnbind;
@@ -1509,7 +1571,7 @@ public class DNA  implements Serializable{
 		//bind the protein
 		if(canSlide==proteinID){
 			//first to free otherwise repressors can't slide
-			freeDNA(n,position,stepSize);
+			freeDNA(n,position,stepSize,position);
 			occupyDNA(n, proteinID,position+proteinSize,stepSize);
 			this.recomputeTFAffinityLandscapeOnTFSlideRight(n, position, proteinSize, stepSize);
 		}
@@ -1547,14 +1609,14 @@ public class DNA  implements Serializable{
 		if(canSlide==proteinID && checkOccupancy){
 			canSlide=getBoundProtein(position-stepSize,stepSize);
 			if(canSlide==Constants.NONE){
-				canSlide =  proteinID;
+				canSlide = proteinID;
 			}
 		}
 		
 		//bind the protein
 		if(canSlide==proteinID){
 			//first to free otherwise repressors can't slide
-			freeDNA(n, position+proteinSize-stepSize,stepSize);
+			freeDNA(n, position+proteinSize-stepSize,stepSize, position);
 			occupyDNA(n, proteinID,position-stepSize,stepSize);
 			this.recomputeTFAffinityLandscapeOnTFSlideLeft(n, position, proteinSize, stepSize);
 		}
@@ -1651,17 +1713,21 @@ public class DNA  implements Serializable{
 
 		if (n.TFspecies[n.dbp[proteinID].speciesID].repressor
 				&& Utils.generateNextDouble(n.randomGenerator, 0, 1) < n.TFspecies[n.dbp[proteinID].speciesID].repressionProbability
-				&& CellUtils.computeTFAffinity(n.dna.strand, affinityPosition, n.TFspecies[n.dbp[proteinID].speciesID].pfm, 0) > 0.5 * Math.exp(n.TFspecies[n.dbp[proteinID].speciesID].pwmRepThreshold)){
+				&& CellUtils.computeTFAffinity(n.dna.strand, affinityPosition, n.TFspecies[n.dbp[proteinID].speciesID].pfm, 0) > 0.1 * Math.exp(n.TFspecies[n.dbp[proteinID].speciesID].pwmRepThreshold)){
 			//repression
 			n.dbp[proteinID].repressionState = true;
 
-			int start = Math.max(0, position - n.TFspecies[n.dbp[proteinID].speciesID].repLenLeft);
-			int end = Math.min(position+size + n.TFspecies[n.dbp[proteinID].speciesID].repLenRight, strand.length);
+			int start = Math.max(findLeftBoundary(n,position), position - n.TFspecies[n.dbp[proteinID].speciesID].repLenLeft);
+			int end = Math.min(findRightBoundary(n,position),position+size + n.TFspecies[n.dbp[proteinID].speciesID].repLenRight);
 
 			for(int i=start;i<end;i++){
 				//if position on the DNA is empty then occupy with repressor
-				if (this.occupied[i] == Constants.NONE){
+				if (i < position && this.occupied[i] == Constants.NONE){
+					this.occupied[i]=Constants.REPRESSED;
+				} else if (i >= position && i <= position+size && this.occupied[i] == Constants.NONE){
 					this.occupied[i]=proteinID;
+				} else if (i > position+size && this.occupied[i] == Constants.NONE){
+					this.occupied[i]=Constants.REPRESSED;
 				}
 			}
 		} else {
@@ -1680,21 +1746,21 @@ public class DNA  implements Serializable{
 	 * @param position the position on the dna to bind to
 	 * @param size the size of the protein
 	 */
-	public void freeDNA(Cell n, int position, int size){
+	public void freeDNA(Cell n, int positionToFree, int size, int position){
 
 		if (n.dna.getBoundMolecule(position) != Constants.NONE && n.dbp[n.dna.getBoundMolecule(position)].repressionState){
 
 			n.dbp[n.dna.getBoundMolecule(position)].repressionState = false;
 
-			int start = Math.max(0, position - n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenLeft);
-			int end = Math.min(position+size + n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenRight, strand.length);
+			int start = Math.max(findRightBoundary(n,position), position - n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenLeft);
+			int end = Math.min(position+size + n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenRight, findRightBoundary(n,position));
 			//id of molecule-repressor
 			int id = n.dbp[n.dna.getBoundMolecule(position)].ID;
 
 			//free only those places on DNA that were blocked by TF repressor
 			//if there had been any other proteins in this region before repression they stay
 			for(int i=start;i<end;i++){
-				if (this.occupied[i]==id){
+				if (this.occupied[i]==id || this.occupied[i]==Constants.REPRESSED){
 					this.occupied[i]=Constants.NONE;
 				}
 				//if(n.isInDebugMode()){
@@ -1704,8 +1770,8 @@ public class DNA  implements Serializable{
 
 		} else {
 
-			int end = Math.min(position+size, strand.length);
-			int start = Math.max(0, position);
+			int end = Math.min(positionToFree+size, strand.length);
+			int start = Math.max(0, positionToFree);
 
 			for(int i=start;i<end;i++){
 				this.occupied[i]=Constants.NONE;
@@ -1723,7 +1789,13 @@ public class DNA  implements Serializable{
 	 * @return
 	 */
 	public int getLeftNeighbour(int position){
-		return position>0?this.occupied[position-1]:Constants.NONE;
+
+		//consider repression as well
+		if (position > 0 && this.occupied[position-1] != Constants.REPRESSED){
+			return this.occupied[position-1];
+		} else {
+			return Constants.NONE;
+		}
 	}
 	
 
@@ -1733,7 +1805,13 @@ public class DNA  implements Serializable{
 	 * @return
 	 */
 	public int getRightNeighbour(int position){
-		return position<strand.length-1?this.occupied[position+1]:Constants.NONE;
+		//consider repression as well
+
+		if (position < strand.length-1 && this.occupied[position+1] != Constants.REPRESSED){
+			return this.occupied[position+1];
+		} else {
+			return Constants.NONE;
+		}
 	}
 	
 		

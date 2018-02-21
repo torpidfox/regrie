@@ -78,7 +78,7 @@ public class Cell implements Serializable {
 	public String outputAffinityLandscapeFile;
 	public String outputTFFile;
 	public String outputTargetSiteFollowFile;
-	public String outputTargetSiteBoundTimeFile;
+	//public String outputTargetSiteBoundTimeFile;
 	public String outputDNAOccupancyFinalFile;
 	public String outputTargetSiteFile;
 	public String outputIntermediaryBackupFile;
@@ -134,7 +134,7 @@ public class Cell implements Serializable {
 		this.outputTargetSiteFile=  paramsFilename.getName().replaceAll("params", "target_site").replaceAll(Constants.PARAMETR_FILE_EXTENSION, Constants.TARGET_SITE_FILE_EXTENSION);
 		this.outputTargetSiteFollowFile =  paramsFilename.getName().replaceAll("params", "target_site_follow").replaceAll(Constants.PARAMETR_FILE_EXTENSION, Constants.TF_FILE_EXTENSION);
 		//AD: file storing all times TS was bound
-		this.outputTargetSiteBoundTimeFile =  paramsFilename.getName().replaceAll("params", "ts_time_bound").replaceAll(Constants.PARAMETR_FILE_EXTENSION, Constants.TF_FILE_EXTENSION);
+		//this.outputTargetSiteBoundTimeFile =  paramsFilename.getName().replaceAll("params", "ts_time_bound").replaceAll(Constants.PARAMETR_FILE_EXTENSION, Constants.TF_FILE_EXTENSION);
 		this.outputDNASequenceFile =  paramsFilename.getName().replaceAll("params", "DNA_seq").replaceAll(Constants.PARAMETR_FILE_EXTENSION, Constants.SEQUENCE_FILE_EXTENSION);
 		this.outputAffinityLandscapeFile =  paramsFilename.getName().replaceAll("params", "affinity_landscape").replaceAll(Constants.PARAMETR_FILE_EXTENSION, Constants.AFFINITY_FILE_EXTENSION);
 		this.outputTFFile =  paramsFilename.getName().replaceAll("params", "TF_species").replaceAll(Constants.PARAMETR_FILE_EXTENSION, Constants.TF_FILE_EXTENSION);
@@ -759,7 +759,31 @@ public class Cell implements Serializable {
 
 		//TF species
 		createTFSpecies();
-		
+
+//		String tsWord = "";
+//		for (TargetSite ts: tsg.ts){
+//			tsWord += ts.TFname + " ";
+//			for (int i = ts.relStart; i < ts.relEnd; i++){
+//				if (this.dna.strand[i] == 0){
+//					tsWord += "A";
+//				} else if (this.dna.strand[i] == 1){
+//					tsWord += "C";
+//				} else if (this.dna.strand[i] == 2){
+//					tsWord += "G";
+//				} else if (this.dna.strand[i] == 3){
+//					tsWord += "T";
+//				}
+//			}
+//			tsWord += '\n';
+//		}
+//
+//		try {
+//			PrintWriter writer = new PrintWriter("/Users/dmitrav/Politech/Laboratory/StoсhasticModelling/reGRiE2/debug/ts.txt", "UTF-8");
+//			writer.println(tsWord);
+//		} catch (IOException e) {
+//				// do something
+//			}
+
 		//compute TF affinity landscape
 		dna.computeTFaffinityLandscape(this, this.randomGenerator, TFspecies, this.ip.COMPUTED_AFFINITY_PRECISION.value, this.ip.TF_SPECIFIC_WAITING_TIME.value,this.TFreadingDirection, this.ip.DNA_SECTOR_SIZE.value, this.ip.PRINT_FINAL_OCCUPANCY.value);
 		
@@ -1127,7 +1151,7 @@ public class Cell implements Serializable {
 		//if the simulator follows the occupancy of target sites write the last values;
 		if(this.ip.FOLLOW_TS.value){
 			this.TargetSiteFollowLines.add(this.cellTime+", "+this.tsg.getTargetSiteGroupsOccupancyString());
-			this.printTargetSiteToFollowInfo();	
+//			this.printTargetSiteToFollowInfo();
 		}
 
 		//count collisions.
@@ -1678,36 +1702,36 @@ public class Cell implements Serializable {
 			this.tsg.updateTargetSiteStatistics(tsID, time, bound, timeBound);
 
 			//TODO: true must be a parameter
-			if (false && !bound && timeBound > 0){
-
-				BufferedWriter statusBuffer =  null;
-				try {
-					//Construct the BufferedWriter object
-					statusBuffer = new BufferedWriter(new FileWriter(new File(this.outputPath,this.outputTargetSiteBoundTimeFile), true));
-
-					statusBuffer.write(this.tsg.ts.get(tsID).TFname + " " + this.tsg.ts.get(tsID).relStart + " " + timeBound);
-					statusBuffer.newLine();
-					statusBuffer.flush();
-					statusBuffer.close();
-
-				} catch (FileNotFoundException ex) {
-					ex.printStackTrace();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-			}
+//			if (false && !bound && timeBound > 0){
+//
+//				BufferedWriter statusBuffer =  null;
+//				try {
+//					//Construct the BufferedWriter object
+//					statusBuffer = new BufferedWriter(new FileWriter(new File(this.outputPath,this.outputTargetSiteBoundTimeFile), true));
+//
+//					statusBuffer.write(this.tsg.ts.get(tsID).TFname + " " + this.tsg.ts.get(tsID).relStart + " " + timeBound);
+//					statusBuffer.newLine();
+//					statusBuffer.flush();
+//					statusBuffer.close();
+//
+//				} catch (FileNotFoundException ex) {
+//					ex.printStackTrace();
+//				} catch (IOException ex) {
+//					ex.printStackTrace();
+//				}
+//			}
 
 
 
 			//add a line in the target sites follow file with the new occupancy
-			if(this.ip.FOLLOW_TS.value){
-				String str=time+", ";
-				str+=this.tsg.getTargetSiteGroupsOccupancyString();
-				this.TargetSiteFollowLines.add(str);
-				if(this.TargetSiteFollowLines.size()>=Constants.MAX_STRING_LENGTH){
-					this.printTargetSiteToFollowInfo();	
-				}
-			}
+//			if(this.ip.FOLLOW_TS.value){
+//				String str=time+", ";
+//				str+=this.tsg.getTargetSiteGroupsOccupancyString();
+//				this.TargetSiteFollowLines.add(str);
+//				if(this.TargetSiteFollowLines.size()>=Constants.MAX_STRING_LENGTH){
+//					this.printTargetSiteToFollowInfo();
+//				}
+//			}
 		}
 			
 

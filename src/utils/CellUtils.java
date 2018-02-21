@@ -297,7 +297,7 @@ public class CellUtils {
 					//affinities[i] = computeTFAffinityLR(strand, i, seqsAffinities, sizeLeft, sizeMotif, defaultAffinity);
 					//after
 					//computing affinities according to the thermodynamic approach
-					affinities[i] = Math.exp(computeTFAffinityLR(strand, i, seqsAffinities, sizeLeft, sizeMotif, defaultAffinity));
+					affinities[i] = computeTFAffinityLR(strand, i, seqsAffinities, sizeLeft, sizeMotif, defaultAffinity);
 
 				}
 			}

@@ -12,11 +12,10 @@ public class Constants {
 	public static final int FIRST = 0; // constant that encodes for the index of the first element
 	public static final char CSV_FILE_TEXT_DELIMITER = '\"'; // char that wrapps text in a cell
 	public static final char[] CSV_FILE_CELL_DELIMTER = {',',';'}; // delimiters that separate cells
-	
-	
+
+	public static final int REPRESSED = -2; // AD: constant that encodes DNA region being repressed
 
 
-	
 	// default parameters file
 	public static final String DEFAULT_PARAMS_FILE = "system.ini";
 	public static final String DEFAULT_PARAMS_FILE_WIN = "system_win.ini";

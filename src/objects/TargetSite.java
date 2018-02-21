@@ -50,7 +50,7 @@ public class TargetSite  implements Serializable{
 		region.end-rt.region.start*/
 		
 		this.relStart = (int) (region.start-dnaRegion.start);
-		this.relEnd = (int) (this.region.end-dnaRegion.start- TFsize);
+		this.relEnd = (int) (this.region.end-dnaRegion.start-TFsize);
 		rescaleInterval(TFsize,DNAsize);
 		this.TFid = TFid;
 		this.TFname =  n.TFspecies[TFid].name;
