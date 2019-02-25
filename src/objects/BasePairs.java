@@ -14,8 +14,8 @@ public class BasePairs  implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 5214691368363833137L;
-	public String[] bps = {"A", "C", "G", "T", "N"}; // the letters used in the DNA strands  
-	public String[] complementaryBPs = {"T", "G", "C", "A", "N"}; // the letters used in the DNA strands  
+	static public String[] bps = {"A", "C", "G", "T", "N"}; // the letters used in the DNA strands
+	static public String[] complementaryBPs = {"T", "G", "C", "A", "N"}; // the letters used in the DNA strands
 
 	public int numberOfBP = 4;
 	

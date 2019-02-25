@@ -5,17 +5,18 @@ import java.util.ArrayList;
 
 import environment.Cell;
 
+import utils.CellUtils;
 import utils.Constants;
 
 
 /**
  * a Target site object in a string of DNA
- * @author created: n.r.zabet@gen.cam.ac.uk, modified: dmitrav@inbox.ru
  *
+ * @author created: n.r.zabet@gen.cam.ac.uk, modified: dmitrav@inbox.ru
  */
-public class TargetSite  implements Serializable{
+public class TargetSite implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -4244069998461684773L;
 	public int relStart; //position of the site on the DNA
@@ -26,163 +27,166 @@ public class TargetSite  implements Serializable{
 	public int size;
 	public ArrayList<Integer> group;
 	public int targetSiteID;
-	
+
+	//whether the site belongs to open dna region
+	public boolean isAvailable;
+
 	/*public double lastTimeUpdate;
 	public double timeOccupied;
 	public double firstTimeReached;
 	public double timesReached;*/
-	
-	
+
+
 	/**
 	 * class constructor
+	 *
 	 * @param chromosome the name of the chromosome
-	 * @param start the start position of the target site
-	 * @param end the end position of the target site
-	 * @param DNAstart where does the DNA sequence starts on the chromosome
-	 * @param TFid the ID of the TF that should bind 
+	 * @param start      the start position of the target site
+	 * @param end        the end position of the target site
+	 * @param DNAstart   where does the DNA sequence starts on the chromosome
+	 * @param TFid       the ID of the TF that should bind
 	 */
-	public TargetSite(Cell n, int targetSiteID, String chromosome, long start, long end, DNAregion dnaRegion, int  TFid, int TFsize, int DNAsize, int TFdirections){
-		this.region = new DNAregion(chromosome,start,end);
+	public TargetSite(Cell n, int targetSiteID, String chromosome, long start, long end, DNAregion dnaRegion, int TFid, int TFsize, int DNAsize, int TFdirections) {
+		this.region = new DNAregion(chromosome, start, end);
 		/*bufferRegion=new DNAregion("",rt.region.start-dnaRegion.start, rt.region.end-rt.region.start);
 		if(relInitialDrop.start > 0 && relInitialDrop.end-1 < dnaRegion.size()){
 			this.initialDrop=initialDrop;
-		}	
+		}
 		region.end-rt.region.start*/
-		
-		this.relStart = (int) (region.start-dnaRegion.start);
-		this.relEnd = (int) (this.region.end-dnaRegion.start-TFsize);
-		rescaleInterval(TFsize,DNAsize);
+
+		this.relStart = (int) (region.start - dnaRegion.start);
+		this.relEnd = (int) (this.region.end - dnaRegion.start - TFsize);
+		rescaleInterval(TFsize, DNAsize);
 		this.TFid = TFid;
-		this.TFname =  n.TFspecies[TFid].name;
-		this.size = Math.max(relEnd-relStart,1);
-		
-		
-		group = new  ArrayList<Integer>();
-		this.targetSiteID=targetSiteID;
+		this.TFname = n.TFspecies[TFid].name;
+		this.size = Math.max(relEnd - relStart, 1);
+
+
+		group = new ArrayList<Integer>();
+		this.targetSiteID = targetSiteID;
 		/*this.lastTimeUpdate = 0;
 		this.timeOccupied = 0;
 		this.firstTimeReached = Constants.NONE;
 		this.timesReached = 0;*/
 	}
-	
-	
-	
+
+
 	/**
 	 * class constructor
+	 *
 	 * @param description the text that defines the region
-	 * @param chromosome the name of the chromosome
-	 * @param start the start position of the target site
-	 * @param end the end position of the target site
-	 * @param DNAstart where does the DNA sequence starts on the chromosome
-	 * @param TFid the ID of the TF that should bind 
+	 * @param chromosome  the name of the chromosome
+	 * @param start       the start position of the target site
+	 * @param end         the end position of the target site
+	 * @param DNAstart    where does the DNA sequence starts on the chromosome
+	 * @param TFid        the ID of the TF that should bind
 	 */
-	public TargetSite(int targetSiteID, String description, String chromosome, long start, long end,  DNAregion dnaRegion, int  TFid, int TFsize, int DNAsize, int TFdirections){
-		this.region = new DNAregion(description,chromosome,start,end,false,true);
-		this.relStart = (int) (this.region.start-dnaRegion.start);
-		this.relEnd = (int) (this.region.end-dnaRegion.start);
+	public TargetSite(int targetSiteID, String description, String chromosome, long start, long end, DNAregion dnaRegion, int TFid, int TFsize, int DNAsize, int TFdirections) {
+		this.region = new DNAregion(description, chromosome, start, end, false, true);
+		this.relStart = (int) (this.region.start - dnaRegion.start);
+		this.relEnd = (int) (this.region.end - dnaRegion.start);
 		this.TFid = TFid;
-		this.size = Math.max(relEnd-relStart-TFsize,1);
-		
-		rescaleInterval(TFsize,DNAsize);
-		group = new  ArrayList<Integer>();
-		this.targetSiteID=targetSiteID;
+		this.size = Math.max(relEnd - relStart - TFsize, 1);
+
+		rescaleInterval(TFsize, DNAsize);
+		group = new ArrayList<Integer>();
+		this.targetSiteID = targetSiteID;
 		/*this.lastTimeUpdate = 0;
 		this.timeOccupied = 0;
 		this.firstTimeReached = Constants.NONE;
 		this.timesReached = 0;*/
 
 	}
-	
-	
+
+
 	/**
 	 * class constructor
-	 * @param n the cell 
+	 *
+	 * @param n           the cell
 	 * @param description the text that defines the region
-	 * @param chromosome the name of the chromosome
-	 * @param start the start position of the target site
-	 * @param end the end position of the target site
-	 * @param DNAstart where does the DNA sequence starts on the chromosome
+	 * @param chromosome  the name of the chromosome
+	 * @param start       the start position of the target site
+	 * @param end         the end position of the target site
+	 * @param DNAstart    where does the DNA sequence starts on the chromosome
 	 */
-	public TargetSite(Cell n, int targetSiteID, String description, String chromosome, long start, long end){
-		String DNAregionDescription=description,TFstr;
-		int delimiterPos, TFsize=0;
-	
-		if(description.contains(Constants.FASTA_FILE_DESCRIPTION_CHROMOSOME_DELIMITER)){
-			
-			
+	public TargetSite(Cell n, int targetSiteID, String description, String chromosome, long start, long end) {
+		String DNAregionDescription = description, TFstr;
+		int delimiterPos, TFsize = 0;
+
+		if (description.contains(Constants.FASTA_FILE_DESCRIPTION_CHROMOSOME_DELIMITER)) {
+
+
 			delimiterPos = description.indexOf(Constants.FASTA_FILE_DESCRIPTION_CHROMOSOME_DELIMITER);
-			TFstr = description.substring(0,delimiterPos);
-			DNAregionDescription = description.substring(delimiterPos+1, description.length());
-			
-			this.TFid = n.getTFspeciesID(TFstr);
-			if(this.TFid == Constants.NONE){
-				n.stopSimulation("error while parsion target site "+description+"; unknown TF");
-			}
-			this.TFname =  n.TFspecies[TFid].name;
-			TFsize = n.TFspecies[this.TFid].sizeTotal;			
-			this.region = new DNAregion(n, DNAregionDescription,chromosome,start,end, false,true);
-			//AD: in case of cut subsequence (like we have) it's 0 diminution
-			this.relStart = (int) (this.region.start-n.dna.subsequence.start);
-			this.relEnd = (int) (this.region.end-n.dna.subsequence.start - TFsize);
-			rescaleInterval(TFsize,n.dna.strand.length);
+			TFstr = description.substring(0, delimiterPos);
+			DNAregionDescription = description.substring(delimiterPos + 1, description.length());
 
-			this.size = Math.max(relEnd-relStart,1);
-			group = new  ArrayList<Integer>();
-			this.targetSiteID=targetSiteID;
+			this.TFid = n.getTFspeciesID(TFstr);
+			if (this.TFid == Constants.NONE) {
+				n.stopSimulation("error while parsion target site " + description + "; unknown TF");
+			}
+			this.TFname = n.TFspecies[TFid].name;
+			TFsize = n.TFspecies[this.TFid].sizeTotal;
+			this.region = new DNAregion(n, DNAregionDescription, chromosome, start, end, false, true);
+			//AD: in case of cut subsequence (like we have) it's 0 diminution
+			this.relStart = (int) (this.region.start - n.dna.subsequence.start);
+			this.relEnd = (int) (this.region.end - n.dna.subsequence.start - TFsize);
+			rescaleInterval(TFsize, n.dna.strand.length);
+
+			this.size = Math.max(relEnd - relStart, 1);
+			group = new ArrayList<Integer>();
+			this.targetSiteID = targetSiteID;
 			/*this.lastTimeUpdate = 0;
 			this.timeOccupied = 0;
 			this.firstTimeReached = Constants.NONE;
 			this.timesReached = 0;*/
 
 
-		} else{
-			n.stopSimulation("error while parsion target site "+description+"; no TF species");
+		} else {
+			n.stopSimulation("error while parsion target site " + description + "; no TF species");
 		}
 	}
-	
-	
-	
 
-	
+
 	/**
 	 * returns a string with the location if the provided argument is the id of the TF that needs to bind at current target
+	 *
 	 * @param TFid
 	 * @return
 	 */
-	public String toString(){
-		return this.TFname+Constants.FASTA_FILE_DESCRIPTION_CHROMOSOME_DELIMITER+this.region.toString();
+	public String toString() {
+		return this.TFname + Constants.FASTA_FILE_DESCRIPTION_CHROMOSOME_DELIMITER + this.region.toString();
 	}
-	
-	
-	
-	
-	private void rescaleInterval(int TFsize , int DNAsize){
-		if(relEnd<=relStart){
-			relEnd=relStart+1;
+
+
+	private void rescaleInterval(int TFsize, int DNAsize) {
+		if (relEnd <= relStart) {
+			relEnd = relStart + 1;
 		}
-		relStart = Math.max(0,relStart);
-		relStart = Math.min(relStart,DNAsize- TFsize);
-		relEnd =Math.min(DNAsize- TFsize, relEnd);
-		relEnd = Math.max(relEnd,0);
-	} 
-	
-	/**
-	 * @Override equals
-	 * @return true if to target sites start and end at the same position and have the same direction
-	 */
-	public boolean eqauls(TargetSite ts){
-		return this.relStart == ts.relStart && this.relEnd == ts.relEnd && this.region.direction == ts.region.direction && this.TFid == ts.TFid;
+		relStart = Math.max(0, relStart);
+		relStart = Math.min(relStart, DNAsize - TFsize);
+		relEnd = Math.min(DNAsize - TFsize, relEnd);
+		relEnd = Math.max(relEnd, 0);
 	}
-	
-	
+
+	/**
+	 * @return true if to target sites start and end at the same position and have the same direction
+	 * @Override equals
+	 */
+	public boolean eqauls(TargetSite ts) {
+		return this.relStart == ts.relStart && this.relEnd == ts.relEnd &&
+				this.region.direction == ts.region.direction && this.TFid == ts.TFid;
+	}
+
+
 	/**
 	 * returns true if this target site is in an AND group
+	 *
 	 * @return
 	 */
-	public boolean isInGroup(){
-		return this.group.size() >0;
+	public boolean isInGroup() {
+		return this.group.size() > 0;
 	}
-	
+
 	/**
 	 * update target site statistics
 	 * @param time the current time
@@ -194,7 +198,7 @@ public class TargetSite  implements Serializable{
 		this.timesReached++;
 		this.lastTimeUpdate = time;
 	}*/
-	
+
 	/**
 	 * update the ts occupancy time
 	 * @param time the current time
@@ -202,5 +206,39 @@ public class TargetSite  implements Serializable{
 	/*public void updateOccupancyStatistics(double time){
 		this.timeOccupied+=(time-this.lastTimeUpdate);
 	}*/
-	
+
+	private double _computeTSAffinityLR(byte[] DNAseq, PFM pfm){
+		double sumLR = 0;
+		double sumMax = 0;
+		for (int i = 0; i < pfm.motifSize; i++) {
+			sumLR += pfm.getScorePFM(DNAseq[this.relStart + i], i);
+			sumMax += pfm.getMaxScorePFM(i);
+		}
+		return Math.exp(-(sumLR - sumMax));
+	}
+
+	private double _computeTSAffinityRL(byte[] DNAseq, PFM pfm){
+		double sumRL = 0;
+		double sumMax = 0;
+		byte[] revComplement = CellUtils.getReversedComplementSequences(DNAseq, this.relStart, pfm.motifSize);
+
+		for (int i = 0; i < pfm.motifSize; i++) {
+			sumRL += pfm.getScorePFM(revComplement[i], i);
+			sumMax += pfm.getMaxScorePFM(i);
+		}
+		return Math.exp(-(sumRL - sumMax));
+	}
+
+
+
+	/**
+	 * compute target site affinity
+	 * @param DNAseq
+	 * @param pfm PWM matrix
+	 */
+
+	public double computeTSAffinity(byte[] DNAseq, PFM pfm){
+		return this.region.direction == 1 ? this._computeTSAffinityLR(DNAseq, pfm) : this._computeTSAffinityRL(DNAseq, pfm);
+	}
+
 }
