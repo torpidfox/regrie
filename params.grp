@@ -1,10 +1,10 @@
 #SIMULATION PARAMATERS
 
 #The length of the simulation (in seconds). If lower or equal to zero and there are target sites to be reached by TFs then the simulation will stop when all target sites are reached.
-STOP_TIME = 0.5;
+STOP_TIME = 120.0;
 
 #The number of independent replicate simulations to be performed.
-ENSAMBLE_SIZE = 10;
+ENSAMBLE_SIZE = 1;
 
 #The seed of the random number generator. Use 0 to get a different behaviour each time or different number to get the same behaviour.
 RANDOM_SEED = 0;
@@ -22,13 +22,13 @@ EVENT_LIST_SUBGROUP_SIZE = 0;
 EVENT_LIST_USES_FR = true;
 
 #The folder where the result files will be saved.
-OUTPUT_FOLDER = "results/";
+OUTPUT_FOLDER = "results_debug/";
 
 #The filename where the output results will be saved. Extension will be automatically added at the end. If this is blank then a random unique name will be generated
 OUTPUT_FILENAME = "drosophila";
 
 #The time interval in seconds after which intermediary results will be printed. If zero is used then no intermediary results will be produced.
-PRINT_INTERMEDIARY_RESULTS_AFTER = 0.0;
+PRINT_INTERMEDIARY_RESULTS_AFTER = 10.0;
 
 #This is true if the occupancy at the end of the simulation is printed and false otherwise.
 PRINT_FINAL_OCCUPANCY = true;
@@ -75,7 +75,7 @@ TF_FILE = "biodata/Drosophila/TF_Drosophila_new1.csv";
 TF_COOPERATIVITY_FILE = "";
 
 #A file containing the target sites.
-TS_FILE = "biodata/Drosophila/Kr_TS.txt";
+TS_FILE = "biodata/Drosophila/kr_ts.txt";
 
 #TF_RANDOM PARAMATERS
 

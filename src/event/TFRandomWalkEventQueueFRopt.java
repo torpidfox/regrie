@@ -3,6 +3,7 @@ package event;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
+import utils.CellUtils;
 import utils.Constants;
 import utils.Gillespie;
 import utils.Utils;
@@ -176,9 +177,16 @@ public class TFRandomWalkEventQueueFRopt  extends TFRandomWalkEventQueue{
 			boolean isHoppingEvent = false;
 			boolean isLeftSlidingEvent = false;
 			boolean isRightSlidingEvent = false;
-			
+
+			double affinity = direction == 1 ?
+					CellUtils.computeTFAffinityLR(n.dna.strand, position, n.TFspecies[speciesID].pfm, 0, 0.0) :
+					CellUtils.computeTFAffinityRL(n.dna.strand, position, n.TFspecies[speciesID].pfm, 0, 0.0);
+
+			boolean isTimeZero = affinity < 15;
+
 			//compute the time the TF stays stucked 
-			double nextTime = Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
+			double nextTime = isTimeZero ? 0:
+					Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
 
 			
 			double randomNumber=n.randomGenerator.nextDouble()*n.TFspecies[speciesID].slideRightNo;
