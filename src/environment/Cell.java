@@ -68,6 +68,8 @@ public class Cell implements Serializable {
 	private boolean areTFstoFollow;
 	private double nextPointTFstoFollow;
 	private double stepPointTFstoFollow;
+
+	public double specificBindingThres;
 	
 	//output files
 	public String outputStatusFile;
@@ -120,6 +122,8 @@ public class Cell implements Serializable {
 		
 		printInitInfo();
 		printPreprocesedInfo();
+
+		specificBindingThres = computeSpecificBindingThreshold();
 	}
 	
 	
@@ -1733,6 +1737,21 @@ public class Cell implements Serializable {
 //				}
 //			}
 		}
+
+
+		public double computeSpecificBindingThreshold() {
+			double minAffinity = 1000;
+
+			for (TargetSite ts : this.tsg.ts) {
+				double TSAffinity = ts.computeTSAffinity(this.dna.strand, this.TFspecies[ts.TFid].pfm);
+
+				if (TSAffinity < minAffinity) {
+					minAffinity = TSAffinity;
+				}
+			}
+
+			return minAffinity;
+	}
 			
 
 }

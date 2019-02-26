@@ -12,8 +12,6 @@ import objects.BasePairs;
 import objects.DNAsequence;
 import objects.PFM;
 import objects.TargetSitesGroupLogic;
-import utils.Constants;
-import utils.Utils;
 
 /**
  * this class contains static fields and methods that are used for the biology part of the application
@@ -260,12 +258,12 @@ public class CellUtils {
 			//changed direction interpretation: 0 used to mean LR
 			if (direction == 1) {
 				for (int i = 0; i < strand.length - sizeTotal; i++) {
-					affinities[i] = computeTFAffinityLR(strand, i, pfm, sizeLeft, es);
+					affinities[i] = computeTFAffinityLR(strand, i, pfm, sizeLeft, false);
 				}
 			}
 			if (direction == 0) {
 				for (int i = 0; i < strand.length - sizeTotal; i++) {
-					affinities[i] = computeTFAffinityRL(strand, i, pfm, sizeLeft, es);
+					affinities[i] = computeTFAffinityRL(strand, i, pfm, sizeLeft, false);
 				}
 			}
 		} else {
@@ -335,14 +333,14 @@ public class CellUtils {
 	 * Edited by AD
 	 * computes the affinity between a TF and the DNA at a specific position using the Gerland 2002 one way from 5' to 3'
 	 *
-	 * @param DNAseq the DNA sequence
-	 * @param DNApos the index of the starting bp of the position on the DNA where the affinity is computed
 	 * @param TFseq  the recognise DNA sequence
 	 * @param ens    the non-specific energy
-	 * @param es     the specific energy
+	 * @param DNAseq the DNA sequence
+	 * @param DNApos the index of the starting bp of the position on the DNA where the affinity is computed
+	 * @param isPWMscore
 	 * @return the value of the affinity - value of max affinity
 	 */
-	public static double computeTFAffinityLR(byte[] DNAseq, int DNApos, PFM pfm, int sizeLeft, double es) {
+	public static double computeTFAffinityLR(byte[] DNAseq, int DNApos, PFM pfm, int sizeLeft, boolean isPWMscore) {
 		double sumLR = 0;
 		double sumMax = 0;
 		for (int i = 0; i < pfm.motifSize; i++) {
@@ -352,7 +350,7 @@ public class CellUtils {
 			sumLR += pfm.getScorePFM(DNAseq[DNApos + i + sizeLeft], i);
 			sumMax += pfm.getMaxScorePFM(i);
 		}
-		return -(sumLR - sumMax);
+		return isPWMscore ? sumLR : -(sumLR - sumMax);
 
 	}
 
@@ -396,14 +394,14 @@ public class CellUtils {
 	 * Edited by AD
 	 * computes the affinity between a TF and the DNA at a specific position using the Gerland 2002 two ways from 3' to 5'
 	 *
-	 * @param DNAseq the DNA sequence
-	 * @param DNApos the index of the starting bp of the position on the DNA where the affinity is computed
 	 * @param TFseq  the recognise DNA sequence
 	 * @param ens    the non-specific energy
-	 * @param es     the specific energy
+	 * @param DNAseq the DNA sequence
+	 * @param DNApos the index of the starting bp of the position on the DNA where the affinity is computed
+	 * @param isPWMscore
 	 * @return the value of the affinity - value of max affinity
 	 */
-	public static double computeTFAffinityRL(byte[] DNAseq, int DNApos, PFM pfm, int sizeLeft, double es) {
+	public static double computeTFAffinityRL(byte[] DNAseq, int DNApos, PFM pfm, int sizeLeft, boolean isPWMscore) {
 		double sumRL = 0;
 		double sumMax = 0;
 		byte[] revComplement = getReversedComplementSequences(DNAseq, DNApos + sizeLeft, pfm.motifSize);
@@ -415,7 +413,7 @@ public class CellUtils {
 			sumRL += pfm.getScorePFM(revComplement[i], i);
 			sumMax += pfm.getMaxScorePFM(i);
 		}
-		return -(sumRL - sumMax);
+		return isPWMscore ? sumRL : -(sumRL - sumMax);
 	}
 
 

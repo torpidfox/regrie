@@ -179,10 +179,10 @@ public class TFRandomWalkEventQueueFRopt  extends TFRandomWalkEventQueue{
 			boolean isRightSlidingEvent = false;
 
 			double affinity = direction == 1 ?
-					CellUtils.computeTFAffinityLR(n.dna.strand, position, n.TFspecies[speciesID].pfm, 0, 0.0) :
-					CellUtils.computeTFAffinityRL(n.dna.strand, position, n.TFspecies[speciesID].pfm, 0, 0.0);
+					CellUtils.computeTFAffinityLR(n.dna.strand, position, n.TFspecies[speciesID].pfm, 0, true) :
+					CellUtils.computeTFAffinityRL(n.dna.strand, position, n.TFspecies[speciesID].pfm, 0, true);
 
-			boolean isTimeZero = affinity < 15;
+			boolean isTimeZero = affinity < n.specificBindingThres;
 
 			//compute the time the TF stays stucked 
 			double nextTime = isTimeZero ? 0:

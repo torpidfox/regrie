@@ -2,7 +2,6 @@ package objects;
 import java.io.*;
 import java.util.*;
 
-import agents.TF;
 import environment.Cell;
 
 import utils.CellUtils;
@@ -797,12 +796,12 @@ public class DNA  implements Serializable{
 				TSenergy = ts.computeTSAffinity(strand, TFspecies[ts.TFid].pfm);
 
 				if (ts.region.direction == 1){
-					TSenergy = CellUtils.computeTFAffinityLR(strand, ts.relStart, TFspecies[ts.TFid].pfm, len, TFspecies[ts.TFid].es);
+					TSenergy = CellUtils.computeTFAffinityLR(strand, ts.relStart, TFspecies[ts.TFid].pfm, len, false);
 
 					for (int j = (int) ts.region.start; j < ts.region.end; j++)
 						DNAseq += String.valueOf(BasePairs.bps[strand[j]]);
 				} else if (ts.region.direction == 0){
-					TSenergy = CellUtils.computeTFAffinityRL(strand, ts.relStart, TFspecies[ts.TFid].pfm, len, TFspecies[ts.TFid].es);
+					TSenergy = CellUtils.computeTFAffinityRL(strand, ts.relStart, TFspecies[ts.TFid].pfm, len, false);
 
 					for (int j = (int) ts.region.start; j < ts.region.end; j++)
 						DNAseq += String.valueOf(BasePairs.bps[strand[j]]);

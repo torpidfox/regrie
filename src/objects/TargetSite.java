@@ -214,7 +214,7 @@ public class TargetSite implements Serializable {
 			sumLR += pfm.getScorePFM(DNAseq[this.relStart + i], i);
 			sumMax += pfm.getMaxScorePFM(i);
 		}
-		return Math.exp(-(sumLR - sumMax));
+		return sumLR;
 	}
 
 	private double _computeTSAffinityRL(byte[] DNAseq, PFM pfm){
@@ -226,7 +226,7 @@ public class TargetSite implements Serializable {
 			sumRL += pfm.getScorePFM(revComplement[i], i);
 			sumMax += pfm.getMaxScorePFM(i);
 		}
-		return Math.exp(-(sumRL - sumMax));
+		return sumRL;
 	}
 
 
