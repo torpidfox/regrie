@@ -1801,20 +1801,20 @@ public class DNA  implements Serializable{
 	 */
 	public void freeDNA(Cell n, int positionToFree, int size, int position){
 
-		if (n.dna.getBoundMolecule(position) != Constants.NONE && n.dbp[n.dna.getBoundMolecule(position)].repressionState){
-			_freeRepressed(n, positionToFree, size, position);
-		} else {
+			if (n.dna.getBoundMolecule(position) != Constants.NONE && n.dbp[n.dna.getBoundMolecule(position)].repressionState) {
+				_freeRepressed(n, positionToFree, size, position);
+			} else {
 
-			int end = Math.min(positionToFree+size, strand.length);
-			int start = Math.max(0, positionToFree);
+				int end = Math.min(positionToFree + size, strand.length);
+				int start = Math.max(0, positionToFree);
 
-			for(int i=start;i<end;i++){
-				this.occupied[i]=Constants.NONE;
-				//if(n.isInDebugMode()){
-				//	n.printDebugInfo("free position  "+(i));
-				//}
+				for (int i = start; i < end; i++) {
+					this.occupied[i] = Constants.NONE;
+					//if(n.isInDebugMode()){
+					//	n.printDebugInfo("free position  "+(i));
+					//}
+				}
 			}
-		}
 
 	}
 
@@ -2114,7 +2114,10 @@ public class DNA  implements Serializable{
 	 * @return
 	 */
 	public int getBoundMolecule(int position){
-		return this.occupied[position]!=Constants.NONE && (position==0 || occupied[position-1]!=occupied[position])?occupied[position]:Constants.NONE;
+		return this.occupied[position] != Constants.NONE &&
+				this.occupied[position] != Constants.REPRESSED
+				&& (position==0 || occupied[position-1]!=occupied[position])
+				? occupied[position] : Constants.NONE;
 	}
 
 	public void printAvailabilityBoundaries() throws IOException{

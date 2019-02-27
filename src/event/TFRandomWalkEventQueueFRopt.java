@@ -184,9 +184,10 @@ public class TFRandomWalkEventQueueFRopt  extends TFRandomWalkEventQueue{
 
 			boolean isTimeZero = affinity < n.specificBindingThres;
 
-			//compute the time the TF stays stucked 
+			//compute the time the TF stays stucked
 			double nextTime = isTimeZero ? 0:
 					Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
+			//double nextTime = Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
 
 			
 			double randomNumber=n.randomGenerator.nextDouble()*n.TFspecies[speciesID].slideRightNo;
