@@ -223,6 +223,9 @@ public class SimulatorCLI {
 				if(ensemble!=cell.ensemble){
 					time=0;
 					System.out.println("set finished");
+					//added
+					cell.resetOutputDir("set" + (i/steps));
+					cell.initialiseInternalParameters();
 				}
 								
 				//if it has been more than 1h from last save then save the state

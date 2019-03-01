@@ -178,16 +178,21 @@ public class TFRandomWalkEventQueueFRopt  extends TFRandomWalkEventQueue{
 			boolean isLeftSlidingEvent = false;
 			boolean isRightSlidingEvent = false;
 
-			double affinity = direction == 1 ?
-					CellUtils.computeTFAffinityLR(n.dna.strand, position, n.TFspecies[speciesID].pfm, 0, true) :
-					CellUtils.computeTFAffinityRL(n.dna.strand, position, n.TFspecies[speciesID].pfm, 0, true);
+//			double affinity = direction == 1 ?
+//					n.affinitiesLR.get(speciesID).get(position) :
+//					n.affinitiesRL.get(speciesID).get(position);
 
-			boolean isTimeZero = affinity < n.specificBindingThres;
+
+//			double affinity = direction == 1 ?
+//					CellUtils.computeTFAffinityLR(n.dna.strand, position, n.TFspecies[speciesID].pfm, 0, true) :
+//					CellUtils.computeTFAffinityRL(n.dna.strand, position, n.TFspecies[speciesID].pfm, 0, true);
+//
+			//boolean isTimeZero = affinity < n.specificBindingThres;
 
 			//compute the time the TF stays stucked
-			double nextTime = isTimeZero ? 0:
-					Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
-			//double nextTime = Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
+//			double nextTime = isTimeZero ? 0:
+//					Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
+			double nextTime = Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
 
 			
 			double randomNumber=n.randomGenerator.nextDouble()*n.TFspecies[speciesID].slideRightNo;

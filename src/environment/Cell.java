@@ -91,6 +91,8 @@ public class Cell implements Serializable {
 	public SimulatorGUI gui;
 	
 	public boolean runUntilTSReached;
+
+	public HashMap<Integer, ArrayList<Double>> affinitiesLR, affinitiesRL;
 	//public BufferedWriter statusBuffer;
 	
 	/**
@@ -109,8 +111,10 @@ public class Cell implements Serializable {
 		}
 		
 		this.outputParamsFile = ip.exportParameterFile(paramsFile);
-		this.outputPath=ip.outputDirectory;
-		
+		resetOutputDir("set0");
+		//this.outputPath=ip.outputDirectory + "/set0";
+
+
 		generateOutputFilenames(this.outputParamsFile);
 		
 	
@@ -124,6 +128,52 @@ public class Cell implements Serializable {
 		printPreprocesedInfo();
 
 		specificBindingThres = computeSpecificBindingThreshold();
+//		affinitiesLR = _computeAllAffinitiesLR();
+//		affinitiesRL = _computeAllAffinitiesRL();
+	}
+
+	public void resetOutputDir(String subdir) {
+		this.outputPath=ip.outputDirectory + "/" + subdir;
+
+		if(!this.outputPath.trim().isEmpty()){
+			File directory = new File(this.outputPath.trim());
+			if(!directory.exists()){
+				if(!directory.mkdir()){
+					this.outputPath = "";
+				}
+			}
+			this.outputPath = directory.getPath()+File.separator;
+
+		}
+
+	}
+
+	private HashMap<Integer, ArrayList<Double>> _computeAllAffinitiesLR() {
+		HashMap<Integer, ArrayList<Double>> result = new HashMap<>();
+
+		for (TFspecies tf : this.TFspecies) {
+			ArrayList<Double> buff = new ArrayList<>();
+			for (int i = 0; i < this.dna.strand.length - tf.sizeTotal; i++){
+				buff.add(CellUtils.computeTFAffinityLR(this.dna.strand, i, tf.pfm, 0, true));
+			}
+			result.put(tf.id, buff);
+		}
+
+		return result;
+	}
+
+	private HashMap<Integer, ArrayList<Double>> _computeAllAffinitiesRL() {
+		HashMap<Integer, ArrayList<Double>> result = new HashMap<>();
+
+		for (TFspecies tf : this.TFspecies) {
+			ArrayList<Double> buff = new ArrayList<>();
+			for (int i = 0; i < this.dna.strand.length - tf.sizeTotal; i++){
+				buff.add(CellUtils.computeTFAffinityRL(this.dna.strand, i, tf.pfm, 0, true));
+			}
+			result.put(tf.id, buff);
+		}
+
+		return result;
 	}
 	
 	
@@ -151,7 +201,7 @@ public class Cell implements Serializable {
 	 * initialises the internal parameters
 	 * @throws FileNotFoundException 
 	 */
-	private void initialiseInternalParameters() throws FileNotFoundException {
+	public void initialiseInternalParameters() throws FileNotFoundException {
 		
 		
 		//create the random number generator
