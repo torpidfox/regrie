@@ -1134,7 +1134,10 @@ public class Cell implements Serializable {
 			
 
 			//print intermediary steady state results
-			if(this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value > 0 && this.cellTime < this.totalStopTime && this.cellTime >= this.lastPrintResultsAfter + this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value && this.totalStopTime > this.lastPrintResultsAfter + 2*this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value){
+			if(this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value > 0 &&
+					this.cellTime < this.totalStopTime &&
+					this.cellTime >= this.lastPrintResultsAfter + this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value &&
+					this.totalStopTime > this.lastPrintResultsAfter + 2*this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value){
 					this.lastPrintResultsAfter += this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value;
 					printSteadyStates(this.lastPrintResultsAfter);
 			}
@@ -1147,17 +1150,20 @@ public class Cell implements Serializable {
 
 		
 		//print steady state info
+
+		if((this.totalStopTime-this.cellTime  <= doubleZero)){
+			printFinalDebugInfo(elapsedTimeSec);
+		}
+
 		if(this.totalStopTime -this.cellTime <= doubleZero){
 			performEndSampleActions(curTime);
 			if(ensemble >= this.ip.ENSEMBLE_SIZE.value){
 				performEndActions(elapsedTimeSec);
 			} 
 		} 
+
 		
-		
-		if((this.totalStopTime-this.cellTime  <= doubleZero) && this.ensemble >= this.ip.ENSEMBLE_SIZE.value-1){
-			printFinalDebugInfo(elapsedTimeSec);
-		}
+
 		
 		return elapsedTimeSec;
 	}
