@@ -194,7 +194,7 @@ public class TargetSite implements Serializable {
      * @param time the current time
      */
 	/*public void updateTimesReachedStatistics(double time){
-		if(this.firstTimeReached == Constants.NONE){
+		if(this.firstTimeReaced == Constants.NONE){
 			this.firstTimeReached = time;
 		}
 		this.timesReached++;

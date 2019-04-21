@@ -138,8 +138,8 @@ public class TargetSitesAndGroups implements Serializable {
         boolean evaluateGroup;
         for (int i : ts.get(tsID).group) {
             TargetSitesGroup ts = tsg.get(i);
-            //evaluateGroup = tsg.get(i).evaluateRPNTree(occupancy);
-            evaluateGroup = tsg.get(i).isOccupied;
+            evaluateGroup = tsg.get(i).evaluateRPNTree(occupancy);
+            //evaluateGroup = tsg.get(i).isOccupied;
             if (evaluateGroup) {
                 tsg.get(i).updateTimesReachedStatistics(time);
             }
@@ -148,8 +148,8 @@ public class TargetSitesAndGroups implements Serializable {
                 tsg.get(i).updateOccupancyStatistics(time);
             }
 
-            //tsg.get(i).isOccupied = evaluateGroup;
-            tsg.get(i).isOccupied = this.occupancy[tsID];
+            tsg.get(i).isOccupied = evaluateGroup;
+            //tsg.get(i).isOccupied = this.occupancy[tsID];
             tsg.get(i).lastTimeUpdate = time;
         }
 

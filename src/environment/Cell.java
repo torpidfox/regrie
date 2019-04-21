@@ -95,6 +95,40 @@ public class Cell implements Serializable {
     public HashMap<Integer, ArrayList<Double>> affinitiesLR, affinitiesRL;
     //public BufferedWriter statusBuffer;
 
+    public Cell(InputParameters ip, SimulatorGUI gui, boolean newParamsFile) throws FileNotFoundException {
+
+        this.gui = gui;
+
+        this.ip = ip;
+
+        String paramsFile = "";
+
+        this.outputParamsFile = ip.exportParameterFile(paramsFile);
+        resetOutputDir("set0");
+        //this.outputPath=ip.outputDirectory + "/set0";
+
+
+        generateOutputFilenames(this.outputParamsFile);
+
+
+        //initialise internal parameters
+        initialiseInternalParameters();
+
+        //initialise output parameters
+        //initialiseOutputParameters();
+
+        printInitInfo();
+        printPreprocesedInfo();
+
+        specificBindingThres = computeSpecificBindingThreshold();
+        affinitiesLR = _computeAllAffinitiesLR();
+        affinitiesRL = _computeAllAffinitiesRL();
+
+        for (TargetSitesGroup group : tsg.tsg) {
+            group.isAvailable = group.isAvailable(this);
+        }
+    }
+
     /**
      * constructor that initialises a nucleus
      *
@@ -1239,6 +1273,13 @@ public class Cell implements Serializable {
             if (this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value > 0 && this.cellTime < this.totalStopTime && this.cellTime >= this.lastPrintResultsAfter + this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value && this.totalStopTime > this.lastPrintResultsAfter + 2 * this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value) {
                 this.lastPrintResultsAfter += this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value;
                 printSteadyStates(this.lastPrintResultsAfter);
+                try {
+                    dna.printOccupnacy(this.cellTime);
+                }
+
+                catch (IOException e) {
+
+                }
             }
 
         }
@@ -1251,6 +1292,13 @@ public class Cell implements Serializable {
         //print steady state info
 
         if ((this.totalStopTime - this.cellTime <= doubleZero)) {
+            try {
+                dna.printOccupnacy(100);
+            }
+
+            catch (IOException e) {
+
+            }
             printFinalDebugInfo(elapsedTimeSec);
         }
 

@@ -62,6 +62,7 @@ public class TF extends DBP implements Serializable {
     public void act(Cell n, ProteinEvent pe) {
         double previousTimeOfLastPositionChange = this.timeOfLastPositionChange;
         int oldDirection = this.direction;
+        int slidingLength = 0;
 
         if (this.position == Constants.NONE) {
             //this is a binding event
@@ -103,7 +104,7 @@ public class TF extends DBP implements Serializable {
                         n.printDebugInfo(pe.time + " TF " + this.ID + " reached left limit and, due to periodic " +
 								"boundary condition, it will attempt to bind at the end!");
                     }
-                    hopMolecule(n, pe.time, n.dna.strand.length - this.size - 1);
+                    hopMolecule(n, pe.time, n.dna.strand.length - this.size - slidingLength);
                 } else {
                     if (pe.position >= 0) {
                         slideLeftMolecule(n, pe.time, pe.position, pe.isHoppingEvent);
@@ -145,6 +146,7 @@ public class TF extends DBP implements Serializable {
             timeBound = this.timeOfLastPositionChange - previousTimeOfLastPositionChange;
             updateBoundTime(n, timeBound, oldDirection, lastPosition);
         }
+
 
 
         if ((this.position != Constants.NONE && n.dna.isTargetSite[this.speciesID][this.position][this.direction] != Constants.NONE)) {
