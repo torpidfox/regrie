@@ -170,25 +170,30 @@ public class TFRandomWalkEventQueueFRopt  extends TFRandomWalkEventQueue{
 			int position = n.dbp[moleculeID].getPosition();
 			int newPosition=position;
 			int nextAction = Constants.NONE;
-			//double avgMoveRate;
 			int direction = n.dbp[moleculeID].getDirection();
+
+			double slidingTime = 0;
 
 			int speciesID = n.dbp[moleculeID].speciesID;
 			boolean isHoppingEvent = false;
 			boolean isLeftSlidingEvent = false;
 			boolean isRightSlidingEvent = false;
 
-			double affinity = direction == 0 ?
-					n.affinitiesLR.get(speciesID).get(position) :
-					n.affinitiesRL.get(speciesID).get(position);
+			double nextTime;
+
+			if (n.bindingThreshold) {
+				double affinity = direction == 0 ?
+						n.affinitiesLR.get(speciesID).get(position) :
+						n.affinitiesRL.get(speciesID).get(position);
 
 
-			boolean isTimeZero = affinity < n.specificBindingThres;
-//
-//			//compute the time the TF stays stucked
-			double nextTime = isTimeZero ? 0:
-					Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
-			//double nextTime = Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
+				boolean isTimeZero = affinity < n.specificBindingThres;
+
+				nextTime = isTimeZero ? 0:
+						Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
+			}
+
+			nextTime = Gillespie.computeNextReactionTime( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
 
 			double randomNumber=n.randomGenerator.nextDouble()*n.TFspecies[speciesID].slideRightNo;
 			if(randomNumber < n.TFspecies[speciesID].jumpNo){
@@ -211,22 +216,27 @@ public class TFRandomWalkEventQueueFRopt  extends TFRandomWalkEventQueue{
 					// the size it too small and the molecule slides to  right
 					isRightSlidingEvent = true;
 					nextAction = Constants.EVENT_TF_RANDOM_WALK_SLIDE_RIGHT;
+					nextTime += slidingTime;
 				} else if(newPosition < position && n.dbp[moleculeID].size > (position - newPosition)){
 					// the size it too small and the molecule slides to  left
 					isLeftSlidingEvent = true;
 					nextAction = Constants.EVENT_TF_RANDOM_WALK_SLIDE_LEFT;
+					nextTime += slidingTime;
 				}
 			} else if(randomNumber < n.dna.TFSlideLeftNo[speciesID][position][direction]){
 				isLeftSlidingEvent = true;
 				nextAction = Constants.EVENT_TF_RANDOM_WALK_SLIDE_LEFT;
 				newPosition= position-n.TFspecies[speciesID].stepLeftSize;
+				nextTime += slidingTime;
 			} else if(randomNumber <  n.dna.TFSlideRightNo[speciesID][position][direction]){
 				isRightSlidingEvent = true;
 				nextAction = Constants.EVENT_TF_RANDOM_WALK_SLIDE_RIGHT;
 				newPosition= position+n.TFspecies[speciesID].stepRightSize;
+				nextTime += slidingTime;
 			}			
 			
-			ProteinEvent e = new ProteinEvent(time+nextTime, moleculeID, newPosition, true, nextAction, isHoppingEvent, isLeftSlidingEvent, isRightSlidingEvent);
+			ProteinEvent e = new ProteinEvent(time+nextTime, moleculeID, newPosition, true, nextAction,
+                    isHoppingEvent, isLeftSlidingEvent, isRightSlidingEvent);
 			n.dbp[moleculeID].pe = e;
 			this.add(e);
 		}

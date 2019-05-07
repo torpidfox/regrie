@@ -25,9 +25,9 @@ public class DNA implements Serializable {
     public int[] occupied;
     public boolean[] chromatin;
     public int[] availabilityBoundaries;//pairs of indices (input DNA) of left (% 2 == 1) and right (% 2 == 0)
-	// boundaries
+    // boundaries
     public int[] openRegionBoundaries;//pairs of indices (bonded DNA open regions) of left (% 2 == 1) and right (% 2
-	// == 0) boundaries
+    // == 0) boundaries
 
     public boolean isRandom;
 
@@ -93,9 +93,9 @@ public class DNA implements Serializable {
      * class constructor - generates everything random
      */
     public DNA(Cell n, Random generator, int length, double proportionOfA, double proportionOfT, double proportionOfC
-			, double proportionOfG, String boundaryCondition) {
+            , double proportionOfG, String boundaryCondition) {
         strand = CellUtils.generateRandomDNASequence(generator, length, proportionOfA, proportionOfT, proportionOfC,
-				proportionOfG);
+                proportionOfG);
         computeBPfreq();
         parseDescription("randomly generated", length, boundaryCondition);
 
@@ -119,7 +119,7 @@ public class DNA implements Serializable {
 
         int start = (int) (this.subsequence.start - this.region.start);
         int end = (int) Math.min(Math.min(this.subsequence.end - this.region.start,
-				this.region.end - this.region.start), dna.strand.length + start);
+                this.region.end - this.region.start), dna.strand.length + start);
 
         this.availabilityBoundaries = getAvailabilityBoundaries(dna, start, end);
         this.openRegionBoundaries = getDnaOpenRegionsBoundaries(availabilityBoundaries);
@@ -157,7 +157,7 @@ public class DNA implements Serializable {
             } else {
                 indicesOfBoundaries.add(indicesOfBoundaries.get(i - 1) + 1);
                 currentLength = availabilityBoundaries[i + 1] - availabilityBoundaries[i];
-                indicesOfBoundaries.add(indicesOfBoundaries.get(i - 1) + 1 + currentLength);
+                indicesOfBoundaries.add(indicesOfBoundaries.get(i - 1) + currentLength);
             }
 
         }
@@ -377,10 +377,7 @@ public class DNA implements Serializable {
         this.region = region;
         this.subsequence = subsequence;
         this.codingRegion = codingRegion;
-        this.useSubSequence = false;
-        if (subsequence.isSubSequenceOf(region)) {
-            this.useSubSequence = true;
-        }
+        this.useSubSequence = subsequence.isSubSequenceOf(region);
         this.copyNumber = copyNumber;
 
     }
@@ -499,8 +496,8 @@ public class DNA implements Serializable {
      * @param TFspecies the list of TF species
      */
     public void computeTFaffinityLandscape(Cell n, Random generator, TFspecies[] TFspecies, int affinityPrecision,
-										   double TFnonspecificWaitingTime, int TFdirections, int DNAsectorSize,
-										   boolean printFinalOccupancy) {
+                                           double TFnonspecificWaitingTime, int TFdirections, int DNAsectorSize,
+                                           boolean printFinalOccupancy) {
         if (TFspecies != null && TFspecies.length > 0) {
             TFsize = new int[TFspecies.length];
             double[][] TFaffinitiesLR = new double[TFspecies.length][strand.length];
@@ -589,7 +586,7 @@ public class DNA implements Serializable {
 
                         for (int k = TFspecies[i].landscapeEscapeLines; k < lines.size() && actualPos < this.strand.length; k++) {
                             bufferValues = Utils.parseCSVline(lines.get(k), Constants.AFFINITY_CSV_FILE_DELIMITER,
-									Constants.NONE);
+                                    Constants.NONE);
                             //Utils.containsValue(bufferValues, Constants.NONE) ||
                             if (bufferValues == null || bufferValues.length <= maxCol) {
                                 n.stopSimulation("error while parsing the affinity landscape file " + TFspecies[i].landscapeFile + ": could not parse line " + i + ": " + lines.get(k));
@@ -649,16 +646,16 @@ public class DNA implements Serializable {
                         }
                         if (!correct) {
                             n.stopSimulation("error while parsing sequences file " + TFspecies[i].seqsFile + " at " +
-									"line: " + currentLine);
+                                    "line: " + currentLine);
                         }
                         TFaffinitiesLR[i] = CellUtils.computeTFAffinities(strand, seqsAffinities,
-								TFspecies[i].seqsDefaultValue, TFspecies[i].sizeLeft,
-								TFspecies[i].sizeTotal - TFspecies[i].sizeLeft - TFspecies[i].sizeRight,
-								TFspecies[i].sizeTotal, 0);
+                                TFspecies[i].seqsDefaultValue, TFspecies[i].sizeLeft,
+                                TFspecies[i].sizeTotal - TFspecies[i].sizeLeft - TFspecies[i].sizeRight,
+                                TFspecies[i].sizeTotal, 0);
                         TFaffinitiesRL[i] = CellUtils.computeTFAffinities(strand, seqsAffinities,
-								TFspecies[i].seqsDefaultValue, TFspecies[i].sizeLeft,
-								TFspecies[i].sizeTotal - TFspecies[i].sizeLeft - TFspecies[i].sizeRight,
-								TFspecies[i].sizeTotal, 1);
+                                TFspecies[i].seqsDefaultValue, TFspecies[i].sizeLeft,
+                                TFspecies[i].sizeTotal - TFspecies[i].sizeLeft - TFspecies[i].sizeRight,
+                                TFspecies[i].sizeTotal, 1);
 
                     } catch (IOException e) {
                         // TODO Auto-generated catch block
@@ -668,13 +665,13 @@ public class DNA implements Serializable {
                 } else if (TFspecies[i].pfm != null && TFspecies[i].pfm.motifSize > 0) {
                     //generate from PWM
                     TFaffinitiesLR[i] = CellUtils.computeTFAffinities(generator, strand, TFspecies[i].pfm,
-							TFspecies[i].sizeLeft, TFspecies[i].sizeTotal, TFspecies[i].es, 0,
-							TFspecies[i].affinityLandscapeRoughness);
+                            TFspecies[i].sizeLeft, TFspecies[i].sizeTotal, TFspecies[i].es, 0,
+                            TFspecies[i].affinityLandscapeRoughness);
                 } else {
                     //generate from sequence
                     TFaffinitiesLR[i] = CellUtils.computeTFAffinities(generator, strand, TFspecies[i].dbd,
-							TFspecies[i].sizeLeft, TFspecies[i].sizeTotal, TFspecies[i].es, 0,
-							TFspecies[i].affinityLandscapeRoughness);
+                            TFspecies[i].sizeLeft, TFspecies[i].sizeTotal, TFspecies[i].es, 0,
+                            TFspecies[i].affinityLandscapeRoughness);
                 }
 
 
@@ -690,7 +687,7 @@ public class DNA implements Serializable {
                 for (int j = 0; j < strand.length; j++) {
                     //AD: clear specified availability
                     //if(TFaffinitiesLR[i][j]!=Constants.NONE && (j < n.dna.codingRegion.start || j > n.dna
-					// .codingRegion.end) && n.dna.chromatin[j]){
+                    // .codingRegion.end) && n.dna.chromatin[j]){
                     if (TFaffinitiesLR[i][j] != Constants.NONE) {
                         effectiveTFavailability[i][j] = true;
                         effectiveTFavailabilitySum[i]++;
@@ -704,7 +701,7 @@ public class DNA implements Serializable {
                     }
 
                     TFavgMoveRate[i][j][0] = CellUtils.computeAvgMoveRate(TFspecies[i].specificWaitingTime,
-							TFaffinitiesLR[i][j]);
+                            TFaffinitiesLR[i][j]);
                     this.isTargetSite[i][j][0] = Constants.NONE;
                     firstReached[i][j][0] = Constants.NONE;
 
@@ -722,17 +719,17 @@ public class DNA implements Serializable {
                         // do nothing it was already processed
                     } else if (TFspecies[i].pfm != null && TFspecies[i].pfm.motifSize > 0) {
                         TFaffinitiesRL[i] = CellUtils.computeTFAffinities(generator, strand, TFspecies[i].pfm,
-								TFspecies[i].sizeLeft, TFspecies[i].sizeTotal, TFspecies[i].es, 1,
-								TFspecies[i].affinityLandscapeRoughness);
+                                TFspecies[i].sizeLeft, TFspecies[i].sizeTotal, TFspecies[i].es, 1,
+                                TFspecies[i].affinityLandscapeRoughness);
                     } else {
                         TFaffinitiesRL[i] = CellUtils.computeTFAffinities(generator, strand, TFspecies[i].dbd,
-								TFspecies[i].sizeLeft, TFspecies[i].sizeTotal, TFspecies[i].es, 1,
-								TFspecies[i].affinityLandscapeRoughness);
+                                TFspecies[i].sizeLeft, TFspecies[i].sizeTotal, TFspecies[i].es, 1,
+                                TFspecies[i].affinityLandscapeRoughness);
                     }
 
                     for (int j = 0; j < strand.length; j++) {
                         TFavgMoveRate[i][j][1] = CellUtils.computeAvgMoveRate(TFspecies[i].specificWaitingTime,
-								TFaffinitiesRL[i][j]);
+                                TFaffinitiesRL[i][j]);
                         effectiveTFOccupancy[i][j][1] = 0;
                         this.isTargetSite[i][j][1] = Constants.NONE;
                         firstReached[i][j][1] = Constants.NONE;
@@ -786,7 +783,7 @@ public class DNA implements Serializable {
                             affinityRightLeftRatio = TFavgMoveRate[i][j - 1][dir] / TFavgMoveRate[i][j + 1][dir];
                             this.TFSlideLeftNo[i][j][dir] = intervalLength / (1 + affinityRightLeftRatio);
                             this.TFSlideRightNo[i][j][dir] =
-									(affinityRightLeftRatio * intervalLength) / (1 + affinityRightLeftRatio);
+                                    (affinityRightLeftRatio * intervalLength) / (1 + affinityRightLeftRatio);
                         }
                     }
                 }
@@ -836,7 +833,7 @@ public class DNA implements Serializable {
                             this.isTargetSite[n.tsg.ts.get(i).TFid][k][direction] = n.tsg.ts.get(i).targetSiteID;
                             this.areTargetSites = true;
                             //System.out.println(n.tsg.ts.get(i).TFid+","+k+", "+direction  +":"+this.isTargetSite[n
-							// .tsg.ts.get(i).TFid][k][direction] );
+                            // .tsg.ts.get(i).TFid][k][direction] );
                         }
                     } else {
                         //if there is no direction specified then mark all directions
@@ -845,7 +842,7 @@ public class DNA implements Serializable {
                                 this.isTargetSite[n.tsg.ts.get(i).TFid][k][dir] = n.tsg.ts.get(i).targetSiteID;
                                 this.areTargetSites = true;
                                 //System.out.println(n.tsg.ts.get(i).TFid+","+k+", "+dir  +":"+this.isTargetSite[n
-								// .tsg.ts.get(i).TFid][k][dir] );
+                                // .tsg.ts.get(i).TFid][k][dir] );
                             }
                         }
                     }
@@ -945,8 +942,8 @@ public class DNA implements Serializable {
      * @throws FileNotFoundException
      */
     public void printAffinities(String path, String filename, int start, int end, int TFreadDirections,
-								TFspecies[] tfs, boolean fullOccupancy, int wigStepSize, double wigThreshold,
-								boolean printBindingEnergy) throws FileNotFoundException {
+                                TFspecies[] tfs, boolean fullOccupancy, int wigStepSize, double wigThreshold,
+                                boolean printBindingEnergy) throws FileNotFoundException {
 
 
         double[][][] bufferTFaffinity = new double[TFavgMoveRate.length][strand.length][this.TFdirections];
@@ -973,13 +970,13 @@ public class DNA implements Serializable {
                     for (int k = j; k < max; k++) {
                         if (k >= 0 && k < strand.length - TFsize[i]) {
                             if (printBindingEnergy) {
-                                bufferTFaffinity[i][k][dir] += CellUtils.computeBindingEnergy(tfs[i].specificWaitingTime, (double) 1.0 / TFavgMoveRate[i][j][dir]);
+                                bufferTFaffinity[i][k][dir] += CellUtils.computeBindingEnergy(tfs[i].specificWaitingTime, 1.0 / TFavgMoveRate[i][j][dir]);
                                 //System.out.println(bufferTFaffinity[i][k][dir]+"; "+tfs[i].specificWaitingTime+";
-								// "+ TFavgMoveRate[i][j][dir]);
+                                // "+ TFavgMoveRate[i][j][dir]);
                             } else {
-                                bufferTFaffinity[i][k][dir] += (double) 1.0 / TFavgMoveRate[i][j][dir];
+                                bufferTFaffinity[i][k][dir] += 1.0 / TFavgMoveRate[i][j][dir];
                                 //System.out.println(bufferTFaffinity[i][k][dir]+"; "+tfs[i]
-								// .specificWaitingMoveTime+"; "+ TFavgMoveRate[i][j][dir]);
+                                // .specificWaitingMoveTime+"; "+ TFavgMoveRate[i][j][dir]);
                             }
                         }
 
@@ -1067,7 +1064,7 @@ public class DNA implements Serializable {
                             steps++;
                         }
                         strBuf.append(", ");
-                        strBuf.append(((double) affinity / steps));
+                        strBuf.append((affinity / steps));
                     }
                 }
                 out.write(strBuf.toString());
@@ -1091,7 +1088,7 @@ public class DNA implements Serializable {
         for (int i = 0; i < n.dbp.length; i++) {
             if (n.dbp[i].getPosition() != Constants.NONE) {
                 //System.out.println(boundMolecule+" : "+n.dbp[boundMolecule].speciesID+" : "+n.dbp[boundMolecule]
-				// .getDirection());
+                // .getDirection());
                 this.finalTFOccupancy[n.dbp[i].speciesID][n.dbp[i].getPosition()][n.dbp[i].getDirection()]++;
             }
         }
@@ -1101,7 +1098,7 @@ public class DNA implements Serializable {
 
     /**
      * prints the where TFs are bound to the DNA at the end of the simulation. the molecules are represented by the
-	 * id of the species and only the first bp is marked as occupied
+     * id of the species and only the first bp is marked as occupied
      *
      * @param path
      * @param filename
@@ -1110,7 +1107,7 @@ public class DNA implements Serializable {
      * @param n
      */
     public void printFinalPosition(String path, String filename, int start, int end, boolean fullOccupancy,
-								   int wigStepSize, double wigThreshold, Cell n) {
+                                   int wigStepSize, double wigThreshold, Cell n) {
         int[][][] bufferTFoccupancy = new int[finalTFOccupancy.length][strand.length][this.TFdirections];
 
         double[][] cutoff = new double[finalTFOccupancy.length][this.TFdirections];
@@ -1219,7 +1216,7 @@ public class DNA implements Serializable {
                             steps++;
                         }
                         strBuf.append(", ");
-                        strBuf.append(((double) occupancy / steps));
+                        strBuf.append((occupancy / steps));
                     }
                 }
                 out.write(strBuf.toString());
@@ -1243,6 +1240,7 @@ public class DNA implements Serializable {
      * blocking the binding on the DNA
      */
     public int bindMolecule(Cell n, int proteinID, int position, int size, boolean checkOccupancy) {
+
         int canBind = canBind(proteinID, position, size, checkOccupancy, n);
 
         //bind the protein
@@ -1264,6 +1262,7 @@ public class DNA implements Serializable {
      */
     private int canBind(int proteinID, int position, int size, boolean checkOccupancy, Cell n) {
         int canBind = proteinID;
+
         //attempt to bind outside the strand interval
         if (position < 0 || position > this.strand.length - size) {
             canBind = Constants.NONE;
@@ -1329,9 +1328,9 @@ public class DNA implements Serializable {
             //recompute for each TF species with regions being repressed
             for (int i = 0; i < TFsize.length; i++) {
                 start = Math.max(0,
-						position - TFsize[i] + 1 - n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenLeft);
+                        position - TFsize[i] + 1 - n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenLeft);
                 end =
-						Math.min(position + size + n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenRight, n.dna.strand.length);
+                        Math.min(position + size + n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenRight, n.dna.strand.length);
 
                 for (int j = start; j < end; j++) {
                     if (effectiveTFavailability[i][j]) {
@@ -1382,7 +1381,7 @@ public class DNA implements Serializable {
             for (int i = 0; i < TFsize.length; i++) {
 
                 start = Math.max(0,
-						position - TFsize[i] + 1 - n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenLeft);
+                        position - TFsize[i] + 1 - n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenLeft);
                 if (!this.effectiveTFavailability[i][Math.max(0, start - 1)]) {
                     buffer = this.findLastBoundMolecule(start, position - 1);
                     if (buffer[0] != Constants.NONE) {
@@ -1391,7 +1390,7 @@ public class DNA implements Serializable {
                 }
 
                 end =
-						Math.min(position + size + n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenRight, this.strand.length - 1);
+                        Math.min(position + size + n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenRight, this.strand.length - 1);
                 if (!this.effectiveTFavailability[i][end]) {
                     buffer = this.findFirstBoundMolecule(end, Math.min(end + TFsize[i] - 1, strand.length - 1));
                     if (buffer[0] != Constants.NONE) {
@@ -1400,7 +1399,7 @@ public class DNA implements Serializable {
                 }
 
                 int maxPos =
-						strand.length - TFsize[i] - n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenRight;
+                        strand.length - TFsize[i] - n.TFspecies[n.dbp[n.dna.getBoundMolecule(position)].speciesID].repLenRight;
                 for (int j = start; j < end; j++) {
                     if (j < maxPos && !effectiveTFavailability[i][j]) {
                         effectiveTFavailability[i][j] = true;
@@ -1640,9 +1639,7 @@ public class DNA implements Serializable {
             canSlide = getBoundProtein(position + proteinSize, stepSize);
             if (canSlide == Constants.NONE) {
                 canSlide = proteinID;
-            }
-
-            else if (canSlide == Constants.REPRESSED
+            } else if (canSlide == Constants.REPRESSED
                     && n.dbp[proteinID].repressionState) {
                 canSlide = proteinID;
             }
@@ -1655,7 +1652,7 @@ public class DNA implements Serializable {
         if (canSlide == proteinID) {
             int occSize = n.TFspecies[n.dbp[proteinID].speciesID].sizeTotal;
 
-            if(position != Constants.NONE && n.dna.getBoundMolecule(position) != Constants.NONE) {
+            if (position != Constants.NONE && n.dna.getBoundMolecule(position) != Constants.NONE) {
                 if (n.dbp[n.dna.getBoundMolecule(position)].repressionState) {
                     //occSize += n.TFspecies[n.dbp[proteinID].speciesID].sizeTotal;
                 }
@@ -1693,7 +1690,7 @@ public class DNA implements Serializable {
         }
 
         //AD: take into account boundaries of open regions on the DNA
-        int leftBoundary = findLeftBoundary(n, newPosition);
+        int leftBoundary = findLeftBoundary(n, position);
         if (newPosition < leftBoundary) {
             canSlide = Constants.NONE;
         }
@@ -1703,11 +1700,10 @@ public class DNA implements Serializable {
             canSlide = getBoundProtein(position - stepSize, stepSize);
             if (canSlide == Constants.NONE) {
                 canSlide = proteinID;
-            }
-            else if (canSlide == Constants.REPRESSED
+            } else if (canSlide == Constants.REPRESSED
                     && n.dbp[proteinID].repressionState) {
                 canSlide = proteinID;
-                }
+            }
         }
 
         //bind the protein
@@ -1715,8 +1711,8 @@ public class DNA implements Serializable {
             //first to free otherwise repressors can't slide
             int occSize = stepSize;
 
-            if(position != Constants.NONE && n.dna.getBoundMolecule(position) != Constants.NONE) {
-                    if (n.dbp[n.dna.getBoundMolecule(position)].repressionState) {
+            if (position != Constants.NONE && n.dna.getBoundMolecule(position) != Constants.NONE) {
+                if (n.dbp[n.dna.getBoundMolecule(position)].repressionState) {
                     occSize = n.TFspecies[n.dbp[proteinID].speciesID].sizeTotal;
                 }
             }
@@ -1938,7 +1934,7 @@ public class DNA implements Serializable {
 //                _moveRepressionOnSlidingRight(n, positionToFree, size, position);
 //            }
 //            else {
-                _freeRepressed(n, positionToFree, size, position);
+            _freeRepressed(n, positionToFree, size, position);
 
 
         } else {
@@ -2002,7 +1998,7 @@ public class DNA implements Serializable {
 
         for (int i = 0; i < end && result == Constants.NONE; i++) {
             isFree = true;
-            start = (int) Math.max(0, i - spaceBefore);
+            start = Math.max(0, i - spaceBefore);
             for (int j = start; j < i + TFsize[TFspecies] - +spaceAfter && isFree; j++) {
                 if (occupied[j] != Constants.NONE) {
                     isFree = false;
@@ -2213,7 +2209,7 @@ public class DNA implements Serializable {
                             steps++;
                         }
                         strBuf.append(", ");
-                        strBuf.append(((double) occupancy / steps));
+                        strBuf.append((occupancy / steps));
                     }
                 }
                 out.write(strBuf.toString());

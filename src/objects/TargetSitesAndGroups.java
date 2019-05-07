@@ -84,11 +84,7 @@ public class TargetSitesAndGroups implements Serializable {
 
     public String toString() {
         String text = "";
-		
-		/*for(int i=0; i< ts.size();i++){
-			text+="\""+ts.get(i).toString()+"\", "+ts.get(i).firstTimeReached+", "+ts.get(i).timesReached+", "+ts.get
-			(i).timeOccupied+"\n";
-		}*/
+
 
         for (int i = 0; i < tsg.size(); i++) {
             text += "\"" + tsg.get(i).toString() + "\", " + tsg.get(i).firstTimeReached + ", " + tsg.get(i).timesReached
@@ -126,17 +122,16 @@ public class TargetSitesAndGroups implements Serializable {
      */
     public void updateTargetSiteStatistics(int tsID, double time, boolean bound, double timeBound) {
 
-        if (bound) {
-            //binding event
-            this.occupancy[tsID] = true;
-        } else {
-            //unbinding event
-            this.occupancy[tsID] = false;
-        }
+
+        //binding event
+        //unbinding event
+        this.occupancy[tsID] = bound;
 
         //check for each group the current TF belongs to the state
         boolean evaluateGroup;
         for (int i : ts.get(tsID).group) {
+
+
             TargetSitesGroup ts = tsg.get(i);
             evaluateGroup = tsg.get(i).evaluateRPNTree(occupancy);
             //evaluateGroup = tsg.get(i).isOccupied;
@@ -145,7 +140,8 @@ public class TargetSitesAndGroups implements Serializable {
             }
 
             if (tsg.get(i).isOccupied) {
-                tsg.get(i).updateOccupancyStatistics(time);
+
+                tsg.get(i).updateOccupancyStatistics(timeBound);
             }
 
             tsg.get(i).isOccupied = evaluateGroup;

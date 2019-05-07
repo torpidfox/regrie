@@ -8,5 +8,5 @@ import environment.Cell;
  *
  */
 public interface Agent {
-	public void act(Cell n);
+	void act(Cell n);
 }

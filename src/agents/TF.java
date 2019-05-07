@@ -149,7 +149,9 @@ public class TF extends DBP implements Serializable {
 
 
 
-        if ((this.position != Constants.NONE && n.dna.isTargetSite[this.speciesID][this.position][this.direction] != Constants.NONE)) {
+        if ((this.position != Constants.NONE
+                && n.dna.isTargetSite[this.speciesID][this.position][this.direction] != Constants.NONE)) {
+
             n.updateTargetSiteStatistics(n.dna.isTargetSite[this.speciesID][this.position][this.direction],
 					this.timeOfLastPositionChange, true, timeBound, pe.proteinID);
 
@@ -158,6 +160,10 @@ public class TF extends DBP implements Serializable {
             }
         }
         if (this.lastPosition != Constants.NONE && n.dna.isTargetSite[this.speciesID][this.lastPosition][oldDirection] != Constants.NONE) {
+//            if(this.lastPosition == 1336 && this.speciesID == 1 && oldDirection == 1) {
+//                System.out.println("time updated! last position change: " + timeOfLastPositionChange +
+//                        " time bound " + timeBound);
+//            }
             n.updateTargetSiteStatistics(n.dna.isTargetSite[this.speciesID][this.lastPosition][oldDirection],
 					this.timeOfLastPositionChange, false, timeBound, pe.proteinID);
         }
@@ -805,9 +811,8 @@ public class TF extends DBP implements Serializable {
      * @param time       the time
      */
     public int bindMolecule(Cell n, double time, int newPosition) {
-        int bound = Constants.NONE;
+        int bound = n.dna.bindMolecule(n, ID, newPosition, size, n.ip.CHECK_OCCUPANCY_ON_BINDING.value);
 
-        bound = n.dna.bindMolecule(n, ID, newPosition, size, n.ip.CHECK_OCCUPANCY_ON_BINDING.value);
         if (bound != ID) {
             bound = Constants.NONE;
         } else {

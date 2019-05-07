@@ -91,6 +91,7 @@ public class Cell implements Serializable {
     public SimulatorGUI gui;
 
     public boolean runUntilTSReached;
+    public boolean bindingThreshold = false;
 
     public HashMap<Integer, ArrayList<Double>> affinitiesLR, affinitiesRL;
     //public BufferedWriter statusBuffer;
@@ -283,10 +284,7 @@ public class Cell implements Serializable {
         generateObjects();
 
         //TS to be reached;
-        areTargetSitesToBeReached = false;
-        if (dna.areTargetSites) {
-            areTargetSitesToBeReached = true;
-        }
+        areTargetSitesToBeReached = dna.areTargetSites;
         this.targetSitesReached = 0;
         initTargetSitesToFollow();
 
@@ -337,10 +335,7 @@ public class Cell implements Serializable {
 
 
         //TS to be reached;
-        areTargetSitesToBeReached = false;
-        if (dna.areTargetSites) {
-            areTargetSitesToBeReached = true;
-        }
+        areTargetSitesToBeReached = dna.areTargetSites;
         this.targetSitesReached = 0;
         this.runUntilTSReached = false;
 
@@ -1197,11 +1192,7 @@ public class Cell implements Serializable {
             createRandomNumberGenerator();
         }
 
-        if (this.ip.STOP_TIME.value != this.totalStopTime || (this.ip.STOP_TIME.value == this.totalStopTime && this.cellTime != 0)) {
-            this.isPartialSimulation = true;
-        } else {
-            this.isPartialSimulation = false;
-        }
+        this.isPartialSimulation = this.ip.STOP_TIME.value != this.totalStopTime || (this.ip.STOP_TIME.value == this.totalStopTime && this.cellTime != 0);
 
         if (this.isPartialSimulation && !this.isInDebugMode() && this.cellTime == 0 && this.ensemble == 0) {
             printDebugInfo("#sample, cellTime, elapsedTimeSec");
@@ -1351,7 +1342,7 @@ public class Cell implements Serializable {
         // compute real time of simulation
 
         //compute the time TFs were bound to DNA.
-        this.computeDNABoundTime();
+        //this.computeDNABoundTime();
 
         //record last sliding lengths
         this.recordLastSlidingLenths();
@@ -1483,7 +1474,7 @@ public class Cell implements Serializable {
      */
     public double computeElapsedTime(double curTime) {
         long finalTime = System.currentTimeMillis();
-        return (double) (finalTime - curTime) / 1000;
+        return (finalTime - curTime) / 1000;
     }
 
 
@@ -1524,7 +1515,7 @@ public class Cell implements Serializable {
                         this.ip.WIG_STEP.value, this.ip.WIG_THRESHOLD.value, this.ip.OUTPUT_BINDING_ENERGY.value);
             }
 
-            printTFspecies(0, true, this.outputTFFile);
+            //printTFspecies(0, true, this.outputTFFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1677,10 +1668,10 @@ public class Cell implements Serializable {
      */
     public void recordLastSlidingLenths() {
         if (this.ip.OUTPUT_SLIDING_LENGTHS.value) {
-            for (int i = 0; i < this.dbp.length; i++) {
-                TFspecies[dbp[i].speciesID].slidingLength.add(dbp[i].getSlidingLength());
-                TFspecies[dbp[i].speciesID].slidingEvents.add(dbp[i].getSlidingEvents());
-                TFspecies[dbp[i].speciesID].observedSlidingLength.add(dbp[i].getObservedSlidingLength());
+            for (DBP aDbp : this.dbp) {
+                TFspecies[aDbp.speciesID].slidingLength.add(aDbp.getSlidingLength());
+                TFspecies[aDbp.speciesID].slidingEvents.add(aDbp.getSlidingEvents());
+                TFspecies[aDbp.speciesID].observedSlidingLength.add(aDbp.getObservedSlidingLength());
             }
         }
     }
@@ -1848,6 +1839,7 @@ public class Cell implements Serializable {
 
                 //update target sites statistics
                 if (dna.isTargetSite[dbp[i].speciesID][dbp[i].getPosition()][dbp[i].getDirection()] != Constants.NONE) {
+
                     tsg.updateTargetSiteStatistics(dna.isTargetSite[dbp[i].speciesID][dbp[i].getPosition()][dbp[i].getDirection()], this.cellTime, true, timeBound);
                 }
             }
@@ -1874,7 +1866,7 @@ public class Cell implements Serializable {
             TFspecies[j].observedSlidingLengthPerBinding =
                     Math.sqrt(2 * (double) (TFspecies[j].countTFSlideLeftEvents + TFspecies[j].countTFSlideRightEvents + TFspecies[j].countTFHoppingEvents) / (TFspecies[j].countTFBindingEvents));
             TFspecies[j].residenceTimePerBinding =
-                    (double) (TFspecies[j].timeBoundAvg * this.totalSimulatedTime) / (TFspecies[j].countTFBindingEvents / TFspecies[j].copyNumber);
+                    (TFspecies[j].timeBoundAvg * this.totalSimulatedTime) / (TFspecies[j].countTFBindingEvents / TFspecies[j].copyNumber);
         }
 
     }

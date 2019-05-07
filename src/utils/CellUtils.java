@@ -426,7 +426,7 @@ public class CellUtils {
 	 */
 	public static double computeAvgMoveRate(double specificWaitingTime, double bindingEnergy) {
 	    //return bindingEnergy;
-		return (specificWaitingTime  * (Math.exp(-bindingEnergy)));
+		return (specificWaitingTime * Math.exp(bindingEnergy));
 	}
 
 	/**
@@ -495,7 +495,7 @@ public class CellUtils {
 				}
 			}
 
-			result = (double) result / strand.length;
+			result = result / strand.length;
 		}
 
 		return result;
@@ -542,7 +542,7 @@ public class CellUtils {
 				}
 
 			}
-			freq = (double) freq / (strand.length - seq.size());
+			freq = freq / (strand.length - seq.size());
 		}
 		return freq;
 	}
@@ -613,8 +613,8 @@ public class CellUtils {
 
 		if (seq != null && seq.length > 0) {
 			for (byte b : seq) {
-				if (b >= 0 && b < bps.bps.length) {
-					result += bps.bps[b];
+				if (b >= 0 && b < BasePairs.bps.length) {
+					result += BasePairs.bps[b];
 				}
 			}
 		}
@@ -736,7 +736,7 @@ public class CellUtils {
 				buffer = "";
 
 				for (int j = i * sectorSize; j < Math.min((i + 1) * sectorSize, seq.length); j++) {
-					buffer += CellUtils.bps.bps[seq[j]];
+					buffer += BasePairs.bps[seq[j]];
 				}
 				out.write(buffer);
 				out.newLine();

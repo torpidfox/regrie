@@ -329,7 +329,8 @@ public class TFspecies implements Serializable {
         this.es = es;
 
 
-        this.sizeTotal = sizeLeft + sizeRight + sizeInBP;
+        this.sizeTotal = sizeInBP;
+        //this.sizeTotal = sizeLeft + sizeRight + sizeInBP;
         this.assocRate = assocRate;
         this.timeBoundAvg = 0;
         this.timeBoundVar = 0;
@@ -583,7 +584,7 @@ public class TFspecies implements Serializable {
         } else if (dbd.length > 0) {
             str += "SEQ:";
             for (int i = 0; i < dbd.length; i++) {
-                str += CellUtils.bps.bps[dbd[i]];
+                str += BasePairs.bps[dbd[i]];
             }
         } else {
             str += this.dbdFile;

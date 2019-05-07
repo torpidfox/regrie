@@ -118,10 +118,7 @@ public class EventList implements Serializable {
      * @return
      */
     public boolean isEmpty() {
-        if ((TFBindingEventQueue == null || TFBindingEventQueue.isEmpty()) && (TFRandomWalkEventQueue == null || TFRandomWalkEventQueue.isEmpty())) {
-            return true;
-        }
-        return false;
+        return (TFBindingEventQueue == null || TFBindingEventQueue.isEmpty()) && (TFRandomWalkEventQueue == null || TFRandomWalkEventQueue.isEmpty());
     }
 
 

@@ -186,12 +186,14 @@ public class TargetSitesGroup   implements Serializable{
 	 * @param time the current time
 	 */
 	public void updateOccupancyStatistics(double time){
-		if (time > this.lastTimeUpdate){
-			this.timeOccupied+=time-this.lastTimeUpdate;
-		}
+		//if (time > this.lastTimeUpdate){
+		this.timeOccupied += time;
+			//this.timeOccupied+=time-this.lastTimeUpdate;
+		//}
 	}
 
 	/**
+	 *
 	 * updates the time the state of the group was last changed. 
 	 * @param time
 	 */

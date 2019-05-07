@@ -9,7 +9,6 @@ public class EnsembleRunnable implements Runnable {
     private int ensemble_index;
     private int steps = 10;
     public Cell cell;
-    Thread t;
 
     EnsembleRunnable(int ensemble_index, InputParameters ip) {
         this.ensemble_index = ensemble_index;
@@ -19,14 +18,6 @@ public class EnsembleRunnable implements Runnable {
             this.cell = new Cell(ip, null, true);
             this.cell.resetOutputDir("set" + ensemble_index);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            Thread.sleep(500);
-        }
-
-        catch (InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -53,7 +44,7 @@ public class EnsembleRunnable implements Runnable {
                     e.printStackTrace();
                 }
 
-                System.out.println("to perform step " + (i % steps) + " of set " + (steps));
+                System.out.println("to perform step " + (i % steps) + " of set " + steps + " for ensemble " + ensemble_index);
 
                 if (i % steps == (steps - 1)) {
                     time = stopTime;
@@ -70,6 +61,8 @@ public class EnsembleRunnable implements Runnable {
                 e.printStackTrace();
             }
         }
+
+        System.out.println("thread " + ensemble_index + " finished");
     }
 
 }

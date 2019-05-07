@@ -91,7 +91,7 @@ public class SimulatorGUI {
 	}
 	
 	
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		
 		SimulatorGUI gui;
 		String filename="";
@@ -700,7 +700,7 @@ public class SimulatorGUI {
 			double stopTimeValue = simulationParamaters.STOP_TIME.getValue();
 			
 			if(stopTimeValue/this.steps > GUIconstants.SIMULATION_PROGRESS_MAX_STEP){
-				this.steps = (int) Math.ceil((double)stopTimeValue/GUIconstants.SIMULATION_PROGRESS_MAX_STEP);
+				this.steps = (int) Math.ceil(stopTimeValue /GUIconstants.SIMULATION_PROGRESS_MAX_STEP);
 			} else{
 				this.steps = GUIconstants.SIMULATION_PROGRESS_MAX;
 			}

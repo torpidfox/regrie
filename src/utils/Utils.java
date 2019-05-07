@@ -263,7 +263,7 @@ public class Utils {
 	public static int parseInteger(String str, int none){	
 		int result = none;
 		try{
-			result = Integer.parseInt(str);
+			result = Integer.valueOf(str);
 		} catch(NumberFormatException e){
 			
 		}
@@ -346,7 +346,7 @@ public class Utils {
 		}
 
 		for(int i=0;i<vector.length;i++){
-			normalizedVector[i] = (double)(vector[i]/sum);
+			normalizedVector[i] = vector[i]/sum;
 
 		}
 		

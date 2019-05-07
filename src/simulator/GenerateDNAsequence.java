@@ -583,7 +583,7 @@ public class GenerateDNAsequence {
 			n.TFspecies[cognateID].name="TF1";
 
 			n.TFspecies[nonCognateID].copyNumber = 0;
-			n.TFspecies[nonCognateID].copyNumber *= (int)Math.round(dnaRegion.size()/maxDNAsize);
+			n.TFspecies[nonCognateID].copyNumber *= Math.round(dnaRegion.size()/maxDNAsize);
 
 			String bufferTFfile = outputTFfile, bufferParamsFile, bufferScriptFile;
 			

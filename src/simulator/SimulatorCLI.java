@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import objects.InputParameters;
 import objects.TFspecies;
+import objects.TargetSitesGroup;
 import utils.BtrackFileParser;
 import utils.Constants;
 import utils.TFfileParser;
@@ -201,7 +202,7 @@ public class SimulatorCLI {
 
         //run intervals
         if (cell.totalStopTime > 0) {
-            while (i < ensembleSteps && ((stopAfterBackup && !wasSaved) || !stopAfterBackup)) {
+            while (i < ensembleSteps && (!stopAfterBackup || !wasSaved)) {
                 //System.out.println("stopAfterBackup="+stopAfterBackup +"; wasSaved="+wasSaved);
                 ensemble = cell.ensemble;
                 time += timeStep;
@@ -222,6 +223,10 @@ public class SimulatorCLI {
                     //added
                     cell.resetOutputDir("set" + (i / steps));
                     cell.initialiseInternalParameters();
+
+                    for (TargetSitesGroup group : cell.tsg.tsg) {
+                        group.isAvailable = group.isAvailable(cell);
+                    }
                 }
 
                 //if it has been more than 1h from last save then save the state
@@ -323,6 +328,6 @@ public class SimulatorCLI {
      * @throws FileNotFoundException
      */
     public static void main(String[] args) throws IOException {
-        threadableMain(args[0]);
+        oldMain(args);
     }
 }

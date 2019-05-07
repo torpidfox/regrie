@@ -124,7 +124,7 @@ public class PFM  implements Serializable{
 		//not all fiilll with zero
 		if(isCorrect && pfm.size()!=CellUtils.bps.numberOfBP){
 			int id;
-			for(String buffer:CellUtils.bps.bps){
+			for(String buffer: BasePairs.bps){
 				if(CellUtils.bps.bpsID.containsKey(buffer)){
 					id = CellUtils.bps.bpsID.get(buffer);
 					if(id!=CellUtils.bps.getANYID() && nucleotidePosition[id]==Constants.NONE){
@@ -208,7 +208,7 @@ public class PFM  implements Serializable{
 				for(int i=0;i<this.pfm.size();i++){
 					bufferNormPFM = new ArrayList<Double>();
 					for (int j=0;j<motifSize; j++){
-						bufferNormPFM.add(Math.log((double)((double)(this.pfm.get(i).get(j)+correction*bpFreq[i])/(normSum+correction))/bpFreq[i]));
+						bufferNormPFM.add(Math.log(((this.pfm.get(i).get(j)+correction*bpFreq[i]) /(normSum+correction)) /bpFreq[i]));
 					}
 					//System.out.println(bufferNormPFM);
 					this.normPFM.add(bufferNormPFM);
@@ -339,7 +339,7 @@ public class PFM  implements Serializable{
 	 * @return
 	 */
 	public String toString(double[] bpFreq){
-		StringBuffer str= new StringBuffer("");
+		StringBuffer str= new StringBuffer();
 		
 		
 		
@@ -359,7 +359,7 @@ public class PFM  implements Serializable{
 		
 		if(this.isPWM){	
 			for(int i=0;i<this.pfm.size();i++){	
-				str.append(CellUtils.bps.bps[i]);
+				str.append(BasePairs.bps[i]);
 				str.append("=[");
 				for (int j=0;j<motifSize; j++){
 					str.append(this.normPFM.get(i).get(j));			
@@ -376,7 +376,7 @@ public class PFM  implements Serializable{
 		} else{
 			
 			for(int i=0;i<this.pfm.size();i++){	
-				str.append(CellUtils.bps.bps[i]);
+				str.append(BasePairs.bps[i]);
 				str.append("=[");
 				for (int j=0;j<motifSize; j++){
 					

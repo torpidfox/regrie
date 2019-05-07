@@ -18,8 +18,8 @@ public class Gillespie {
 	 * @return the time of the next reaction
 	 */
 	public static double computeNextReactionTime(double propensitySum, Random generator){
-		//return 1/propensitySum;
-		return Math.log(generator.nextDouble())/(-propensitySum);
+		//return propensitySum;
+		return Math.log(generator.nextDouble())*(-propensitySum);
 		//return (1/propensitySum)*Math.log
 		// (1/generator.nextDouble());
 	}
@@ -115,7 +115,7 @@ public class Gillespie {
 		
 		for(int i=0;i<sectorSum.length;i++){
 			if(sectorSum[i]+sum >= value){	
-				for(int j=i*sectorSize;j< (int) Math.min(propensity.length, (i+1)*sectorSize); j++){
+				for(int j = i*sectorSize; j< Math.min(propensity.length, (i+1)*sectorSize); j++){
 					sum+=propensity[j];
 					if(sum>=value){
 							return j;
@@ -145,7 +145,7 @@ public class Gillespie {
 		
 		for(int i=0;i<sectorSum.length;i++){
 			if(sectorSum[i]+sum >= value){	
-				for(int j=i*sectorSize;j< (int) Math.min(availability.length, (i+1)*sectorSize); j++){
+				for(int j = i*sectorSize; j< Math.min(availability.length, (i+1)*sectorSize); j++){
 					if(availability[j]){
 						sum++;
 						if(sum>=value){

@@ -152,7 +152,7 @@ public class TFfileParser {
 					//COPYNUMBER
 					if(csv.header.containsKey(Constants.PARSER_TF_CSV_FILE_HEADER[3])){
 						cellContent =buffer.get(csv.header.get(Constants.PARSER_TF_CSV_FILE_HEADER[3])); 
-						copyNumber = Utils.parseInteger(cellContent, copyNumber);
+						copyNumber = (int) Utils.parseDouble(cellContent, copyNumber);
 					} else{
 						n.printDebugInfo("TF file "+filename+" misses TF copy number at line: "+buffer);
 					}
@@ -191,10 +191,7 @@ public class TFfileParser {
 					}
 					
 					//IS_COGNATE
-					isCognate = false;
-					if(dbd!=null && dbd.length>0){
-						isCognate = true;
-					}
+                    isCognate = dbd != null && dbd.length > 0;
 									
 					//unBindingProbability
 					if(csv.header.containsKey(Constants.PARSER_TF_CSV_FILE_HEADER[8])){
@@ -375,7 +372,7 @@ public class TFfileParser {
 						n.printDebugInfo("TF file "+filename+" misses TF repression probability at line: "+buffer);
 					}
 
-					if(copyNumber>0){
+					if(copyNumber>=0){
 						data.add(new TFspecies(dnaRegion, id, name,  bufferDBD, copyNumber, es, sizeLeft, sizeRight, assocRate,bufferDNAregion,isCognate,  unBindingProbability,  slideLeftProbability,  slideRightProbability,  jumpingProbability,  hopSTDdisplacement, specificWaitingTime,  stepLeftSize,  stepRightSize,  uncorrelatedDisplacementSize,  stallsIfBlocked,  collisionUnbindingProbability, affinityLandscapeRoughness, preboundProportion, preboundToHighestAffinity, isImmobile, isBiasedRandomWalk, isTwoStateRandomWalk,repressor, repLenLeft, repLenRight, pwmRepThreshold, repressionProbability, n));
 						
 						id++;

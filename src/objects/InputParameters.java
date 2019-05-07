@@ -38,6 +38,7 @@ public class InputParameters  implements Serializable{
 	public Parameter<Integer> DNA_SECTOR_SIZE;
 	public Parameter<Integer> EVENT_LIST_SUBGROUP_SIZE;
 	public Parameter<Boolean> EVENT_LIST_USES_FR;
+
 	
 	
 	//SIMULATION-OUTPUT PARAMATERS
@@ -78,6 +79,7 @@ public class InputParameters  implements Serializable{
 	public Parameter<Double>  TF_PREBOUND_PROPORTION;
 	public Parameter<Boolean>  TF_PREBOUND_TO_HIGHEST_AFFINITY;
 	public Parameter<Boolean> SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE;
+	//public Parameter<Boolean> SPECIFIC_BINDING_THRESHOLD;
 
 	//TF_REPRESSION PARAMETERS
 	public Parameter<Boolean> REPRESSOR;
@@ -231,6 +233,7 @@ public class InputParameters  implements Serializable{
 		this.TF_PREBOUND_PROPORTION = new Parameter<Double>();
 		this.TF_PREBOUND_TO_HIGHEST_AFFINITY= new Parameter<Boolean>();
 		this.SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE = new Parameter<Boolean>();
+		//this.SPECIFIC_BINDING_THRESHOLD = new Parameter<>();
 		
 		//DNA PARAMETERS
 		this.DNA_SEQUENCE_FILE= new Parameter<String>();
@@ -318,7 +321,8 @@ public class InputParameters  implements Serializable{
 	 */
 	public void loadParameters(BufferedReader br){
 		
-		ArrayList<ArrayList<String>> params = getParamArray(br, Constants.PARAMS_FILE_COMMENT_CHAR, Constants.PARAMS_FILE_LINE_ENDING, Constants.PARAMS_FILE_ASSIGNMENT_CHAR);
+		ArrayList<ArrayList<String>> params = getParamArray(br, Constants.PARAMS_FILE_COMMENT_CHAR,
+				Constants.PARAMS_FILE_LINE_ENDING, Constants.PARAMS_FILE_ASSIGNMENT_CHAR);
 		String name = "", value = "";
 		
 		for(int i=0; i< params.size();i++){
@@ -885,13 +889,27 @@ public class InputParameters  implements Serializable{
 			if(!description.isEmpty()){this.TF_PREBOUND_TO_HIGHEST_AFFINITY.description = description;}
 			if(!category.isEmpty()){this.TF_PREBOUND_TO_HIGHEST_AFFINITY.category = category;}
 			found = true;
-		} else if(name.equals("SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE")){
-			this.SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE.value =  Utils.parseBoolean(value, true);
-			if(!label.isEmpty()){this.SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE.label = label;}
-			if(!description.isEmpty()){this.SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE.description = description;}
-			if(!category.isEmpty()){this.SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE.category = category;}
+		} else if(name.equals("SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE")) {
+			this.SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE.value = Utils.parseBoolean(value, true);
+			if (!label.isEmpty()) {
+				this.SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE.label = label;
+			}
+			if (!description.isEmpty()) {
+				this.SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE.description = description;
+			}
+			if (!category.isEmpty()) {
+				this.SLIDING_AND_HOPPING_AFFECTS_TF_ASSOC_RATE.category = category;
+			}
 			found = true;
 		}
+//		} else if(name.equals("SPECIFIC_BINDING_THRESHOLD")){
+//			this.SPECIFIC_BINDING_THRESHOLD.value =  Utils.parseBoolean(value, false);
+//			if(!label.isEmpty()){this.SPECIFIC_BINDING_THRESHOLD.label = label;}
+//			if(!description.isEmpty()){this.SPECIFIC_BINDING_THRESHOLD.description = description;}
+//			if(!category.isEmpty()){this.SPECIFIC_BINDING_THRESHOLD.category = category;}
+//			found = true;
+//		}
+
 
 		//TF_REPRESSION PARAMETERS
 		else if(name.equals("REPRESSOR")){

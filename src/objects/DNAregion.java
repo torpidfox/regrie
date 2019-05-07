@@ -153,7 +153,8 @@ public class DNAregion implements Serializable {
                             boolean recomputed = false;
 
                             for (int i = 0; i < n.dna.availabilityBoundaries.length; i += 2) {
-                                if (this.start >= n.dna.availabilityBoundaries[i] & this.end <= n.dna.availabilityBoundaries[i + 1]) {
+                                if (this.start >= n.dna.availabilityBoundaries[i]
+                                        && this.end <= n.dna.availabilityBoundaries[i + 1]) {
                                     recomputeTSboundaries(n, this.start, this.end);
                                     recomputed = true;
                                     break;

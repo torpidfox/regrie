@@ -28,9 +28,6 @@ public class TargetSite implements Serializable {
     public ArrayList<Integer> group;
     public int targetSiteID;
 
-    //whether the site belongs to open dna region
-    public boolean isAvailable;
-
 	/*public double lastTimeUpdate;
 	public double timeOccupied;
 	public double firstTimeReached;
@@ -120,7 +117,7 @@ public class TargetSite implements Serializable {
 
             delimiterPos = description.indexOf(Constants.FASTA_FILE_DESCRIPTION_CHROMOSOME_DELIMITER);
             TFstr = description.substring(0, delimiterPos);
-            DNAregionDescription = description.substring(delimiterPos + 1, description.length());
+            DNAregionDescription = description.substring(delimiterPos + 1);
 
             this.TFid = n.getTFspeciesID(TFstr);
             if (this.TFid == Constants.NONE) {
