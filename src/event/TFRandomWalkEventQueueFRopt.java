@@ -192,9 +192,9 @@ public class TFRandomWalkEventQueueFRopt  extends TFRandomWalkEventQueue{
 				nextTime = isTimeZero ? 0:
 						Gillespie.computeTimeBound( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
 			}
-
-			nextTime = Gillespie.computeTimeBound( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
-
+			else {
+				nextTime = Gillespie.computeTimeBound(n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
+			}
 			double randomNumber=n.randomGenerator.nextDouble()*n.TFspecies[speciesID].slideRightNo;
 			if(randomNumber < n.TFspecies[speciesID].jumpNo){
 				nextAction = Constants.EVENT_TF_RANDOM_WALK_JUMP;

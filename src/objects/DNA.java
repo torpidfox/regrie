@@ -23,6 +23,7 @@ public class DNA implements Serializable {
     private static final long serialVersionUID = 4312661038245046220L;
     public byte[] strand;
     public int[] occupied;
+    public boolean[] repressed;
     public boolean[] chromatin;
     public int[] availabilityBoundaries;//pairs of indices (input DNA) of left (% 2 == 1) and right (% 2 == 0)
     // boundaries
@@ -440,11 +441,11 @@ public class DNA implements Serializable {
      */
     private void setOccupancyVectorFree(Cell n) {
         this.occupied = new int[strand.length];
+        this.repressed = new boolean[strand.length];
 
         for (int i = 1; i < strand.length; i++) {
             this.occupied[i] = Constants.NONE;
         }
-        //freeDNA(n, Constants.FIRST, strand.length);
     }
 
     /**
@@ -1789,7 +1790,8 @@ public class DNA implements Serializable {
         double repressionAffinity = CellUtils.computeTFRepressionAffinity(n.dna.strand, affinityPosition, n.TFspecies[n.dbp[proteinID].speciesID].pfm, 0);
 
         return Utils.generateNextDouble(n.randomGenerator, 0, 1) < n.TFspecies[n.dbp[proteinID].speciesID].repressionProbability
-                && repressionAffinity > 0.1 * Math.exp(n.TFspecies[n.dbp[proteinID].speciesID].pwmRepThreshold) && n.ip.REPRESSION_PROBABILITY.value > 0.0;
+                && repressionAffinity > n.TFspecies[n.dbp[proteinID].speciesID].pwmRepThreshold
+                && n.ip.REPRESSION_PROBABILITY.value > 0.0;
     }
 
     private void _repress(Cell n, int position, int size, int proteinID) {
@@ -1803,11 +1805,13 @@ public class DNA implements Serializable {
             //if position on the DNA is empty then occupy with repressor
             if (i < position && this.occupied[i] == Constants.NONE) {
                 this.occupied[i] = Constants.REPRESSED;
+                this.repressed[i] = true;
             } else if (i >= position && i < position + n.TFspecies[n.dbp[proteinID].speciesID].sizeTotal
                     && this.occupied[i] == Constants.NONE) {
                 this.occupied[i] = proteinID;
             } else if (i > position + size && this.occupied[i] == Constants.NONE) {
                 this.occupied[i] = Constants.REPRESSED;
+                this.repressed[i] = true;
             }
         }
     }
@@ -1856,6 +1860,7 @@ public class DNA implements Serializable {
         for (int i = start; i < end; i++) {
             if (this.occupied[i] == proteinID || this.occupied[i] == Constants.REPRESSED) {
                 this.occupied[i] = Constants.NONE;
+                this.repressed[i] = false;
             }
             //if(n.isInDebugMode()){
             //	n.printDebugInfo("free position  "+(i));
@@ -1943,8 +1948,11 @@ public class DNA implements Serializable {
             int start = Math.max(0, positionToFree);
 
             for (int i = start; i < end; i++) {
-                if (this.occupied[i] != Constants.REPRESSED)
+                if (this.occupied[i] != Constants.REPRESSED && !this.repressed[i])
                     this.occupied[i] = Constants.NONE;
+                if (this.repressed[i]) {
+                    this.occupied[i] = Constants.REPRESSED;
+                }
             }
 
         }

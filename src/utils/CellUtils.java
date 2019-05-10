@@ -385,7 +385,8 @@ public class CellUtils {
 		}
 		//changed: used to be exp
 		//return -(sumLR - sumMax);
-		return Math.exp(sumLR - sumMax);
+		//return Math.exp(sumLR - sumMax);
+		return sumLR;
 
 	}
 
