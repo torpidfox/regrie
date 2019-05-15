@@ -1,0 +1,23 @@
+This file stores calculated limits for the following simulation parameters:
+
+#association rate
+k_assoc = [0.5, 1.0]
+
+#repression range, experimentially estimated (to one side, measured in bp) 
+rr = [100, 150]
+
+#sliding lengths, experimentially estimated (in bp)
+sl = [100, 750]
+
+#number of hb molecules at 46% of expression pattern (t = 55.475, c = 185.35)
+n = 7000
+
+
+hb	5730	
+Kr	5730
+gt	127
+kni	1
+bcd	782
+cad	1530
+tll	68
+hkb	225

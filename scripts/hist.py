@@ -7,6 +7,8 @@ from collections import namedtuple, defaultdict
 from itertools import chain
 from scipy.stats.stats import pearsonr
 from textwrap import wrap
+import operator
+import mplcursors
 
 
 avail_bnd = [4582, 5108, 8005, 8052, 8113, 8778, 8808, 8865, 8900, 8937, 8958, 9040,
@@ -15,18 +17,29 @@ avail_bnd = [4582, 5108, 8005, 8052, 8113, 8778, 8808, 8865, 8900, 8937, 8958, 9
 
 time = 120
 
-tfs = "cad hkb kni gt tll bcd hb".split()
+tfs = "cad hkb kni gt tll bcd hb Kr".split()
+is_repressor = {'bcd' : 'false', 'cad' : 'false', 'Kr' : 'false', 'hb' : 'true', 'gt' : 'true', 'kni' : 'true'}
+rep_len = 125
 
 path_nothres = '/run/media/alisa/Elements/test/reGRiE/results_debug_no_thres_no_repression_100/'
 path_thres = '/run/media/alisa/Elements/test/reGRiE/results_debug_no_thres_repression_100/'
 Ensemble = namedtuple('Ensemble', ['site', 'first_reached', 'times_reached', 'time_occupied', 'never_reached'])
 Site = namedtuple('Site', ['tf', 'left', 'right', 'dir'])
 
+def is_repressed(site, sites):
+	for neighbour in sites:
+		if neighbour != site and is_repressor[neighbour.tf]:
+			if site.left > neighbour.left - rep_len or site.right < neighbour.right + rep_len:
+				return True
+
+	return False
+
+
 def is_overlapping(site, sites):
 	for neighbour in sites:
 		if neighbour != site:
-			if (site.right > neighbour.left and site.left < neighbour.left)\
-				 or (site.left > neighbour.left and site.left < neighbour.right):
+			if (site.right >= neighbour.left and site.left <= neighbour.left)\
+				 or (site.left >= neighbour.left and site.left <= neighbour.right):
 					return True
 
 	return False
@@ -105,7 +118,6 @@ def get_data(path):
 
 def plot_heatmap(sdo, reached_stats, distance):
 	reached_stats_values = np.asarray(list(reached_stats.values()))
-	print(sdo)
 	#print(np.concatenate(([np.asarray(sdo)], [reached_stats_values], [np.asarray(distance)]), axis=0))
 	sns.heatmap(np.concatenate(([sdo], [reached_stats_values], [np.asarray(distance)]), axis=1))
 
@@ -152,14 +164,14 @@ def draw(data, label, color='r'):
 	sns.kdeplot(data, color=color)
 	plt.hist(data, label=label, density=True, alpha = 0.5, color=color)
 
-def sdo_ado(energies, occupancy, reached, condition=''):
-	names = [name for name in occupancy.keys() if condition in name]
-	ado = [energies[name] for name in occupancy.keys() if condition in name.tf]
-	reached_stats = [reached[name] for name in occupancy.keys() if condition in name.tf]
+def sdo_ado(energies, occupancy, reached, condition='', names=None):
+	if not names:
+		names = [name for name in occupancy.keys() if condition in name.tf]
+	ado = [energies[name] for name in occupancy.keys() if name in names]
+	reached_stats = [reached[name] for name in occupancy.keys() if name in names]
 
-	sdo = [occupancy[name] for name in occupancy.keys() if condition in name.tf]
+	sdo = [occupancy[name] for name in occupancy.keys() if name in names]
 	
-
 	ado /= max(np.abs(ado))
 
 	ado = np.log(ado)
@@ -168,11 +180,7 @@ def sdo_ado(energies, occupancy, reached, condition=''):
 	sdo /= max(sdo)
 	#sdo /= max(sdo)
 	sdo = np.log(sdo)
-
-	weirdos = [(name, s, a) for name, s, a in zip(occupancy.keys(), sdo, ado) if a > s]
-	print(weirdos)
-
-	sdo_vs_ado = [(x, y) for name, x, y in zip(names, sdo, ado) if condition in name]
+	sdo_vs_ado = [(x, y) for name, x, y in zip(names, sdo, ado) if name in names]
 
 	# sdo_visited_a_lot = [(x, y) for times_reached, x, y in zip(reached_stats, sdo, ado) if times_reached > thres]
 	# sdo_visited_less = [(x, y) for times_reached, x, y in zip(reached_stats, sdo, ado) if times_reached < thres]
@@ -180,12 +188,20 @@ def sdo_ado(energies, occupancy, reached, condition=''):
 	# print('Overvisited')
 	# print(names_visited_less)
 
-	return sdo_vs_ado
-def draw_scatterplot(sdo, ado, xlabel='ADO', ylabel='SDO', label=None, title=None, col='r'):
-	plt.title('ADO vs SDO, 100 molecules of each tf' + title)
-	plt.scatter(ado, sdo, label=label)
+	return sdo_vs_ado, names
+
+def draw_scatterplot(sdo, ado, xlabel='ADO', ylabel='SDO', label=None, title=None, col='r', names=None):
+	plt.title('ADO vs SDO, 100 молекул каждого белка')
+	plt.scatter(ado, sdo, label=label, alpha=0.5)
 	plt.xlabel(xlabel)
 	plt.ylabel(ylabel)
+
+	# mplcursors.cursor().connect("add", 
+	# 	lambda sel: sel.annotation.set_text(names[sel.target.index]))
+
+	# if names:
+	# 	for i, txt in enumerate(names):
+	# 		plt.annotate(txt, (ado[i], sdo[i]))
 	plt.plot( [-7,1], [-7,1])
 
 def draw_occupancy(energies, occupancy, weirdos):
@@ -220,8 +236,6 @@ def reached_from_distance(distances, reached):
 
 	to_plot = sorted(reached_vs_distance.items(), key=lambda x: x[0])
 	x, y = zip(*to_plot)
-	print(to_plot)
-
 	plt.plot(x, y)
 
 def overlap_hist(site1, site2, times_reached):
@@ -248,14 +262,25 @@ energies = parse_energy('/run/media/alisa/Elements/test/reGRiE/pwm_energies.txt'
 
 occ1, reached, times_reached = concat(get_data(path_nothres))
 occupied_stats, reached_stats, times_reached_stats = get_mean(occ1, reached, times_reached)
-#draw(np.log([el if el != -1 else 1e7 for el in reached_stats.values()]), label='Без порога')
+draw(np.log([el + 2 if el != -1 else 1e7 for el in reached_stats.values()]), label='Без порога')
 
 # for tf in tfs:
 # 	sdo_vs_ado= sdo_ado(energies, occupied_stats, times_reached_stats, condition=tf)
 # 	draw_scatterplot(*zip(*sdo_vs_ado), title=', no thres', col='g')
-# overlap_flag = list(map(lambda s: is_overlapping(s, energies.keys()), energies.keys()))
+
+overlap_flag = list(map(lambda s: is_overlapping(s, energies.keys()), energies.keys()))
+repress_flag = list(map(lambda s: is_repressed(s, energies.keys()), energies.keys()))
+print(repress_flag)
+non_overlapping_sites = [site for site, flag in zip(energies.keys(), overlap_flag) if not flag]
+#for tf in tfs:
+# sdo_vs_ado, names = sdo_ado(energies, occupied_stats, times_reached_stats, names=non_overlapping_sites)
+# draw_scatterplot(*zip(*sdo_vs_ado), label='сайты, не имеющие пересечений с другми', names=names)
+
 # overlapping_sites = [site for site, flag in zip(energies.keys(), overlap_flag) if flag]
-#print(overlapping_sites)
+# sdo_vs_ado, names = sdo_ado(energies, occupied_stats, times_reached_stats, names=overlapping_sites)
+# draw_scatterplot(*zip(*sdo_vs_ado), label='сайты, имеющие пересечения с другими', names=names)
+
+
 
 #overlap_hist(parse_site('gt:chr2R:9984..9996:1'), parse_site('kni:chr2R:9990..10003:1'), reached)
 
@@ -267,14 +292,21 @@ occupied_stats, reached_stats, times_reached_stats = get_mean(occ1, reached, tim
 #plot_heatmap(sdo, times_reached_stats, distances)
 #print(weirdos_nothres)
 #plt.hist(list(times_reached_stats.values()))
-draw(np.log([el for el in reached_stats.values() if el != -1]), label='Без репрессии')
+#draw(np.log([el for el in reached_stats.values() if el != -1]), label='Без репрессии')
 #draw_occupancy(energies, occ)
 #print(weirdos_nothres)
 
-#draw(np.log([el for el in reached[parse_site('gt:chr2R:5022..5034:1')] if el != -1]), label='Без порога', color='r')
-occ2, reached, times_reached = concat(get_data(path_thres))
-#draw(np.log([el for el in reached[parse_site('gt:chr2R:5022..5034:1')] if el != -1]), label='С порогом', color='g')
-occupied_stats, reached_stats, times_reached_stats = get_mean(occ2, reached, times_reached)
+occ2, reached2, times_reached2 = concat(get_data(path_thres))
+# for site in reached.keys():
+# 	if len([el for el in reached[site] if el != -1]) > 1 and len([el for el in reached2[site] if el != -1]) > 1:
+# 		draw(np.log([el for el in reached[site] if el != -1]), label='Без порога', color='r')
+# 		draw(np.log([el for el in reached2[site] if el != -1]), label='С порогом', color='g')
+# 		plt.legend()
+# 		plt.show()
+
+
+
+occupied_stats, reached_stats, times_reached_stats = get_mean(occ2, reached2, times_reached2)
 
 
 # for tf in tfs:
@@ -284,7 +316,7 @@ occupied_stats, reached_stats, times_reached_stats = get_mean(occ2, reached, tim
 #draw_scatterplot(sdo2, ado)
 #print(weirods_thres)
 
-draw(np.log([el if el != -1 else 1e7 for el in reached_stats.values()]), label='С репрессией', color='g')
+draw(np.log([el + 2 if el != -1 else 1e7 for el in reached_stats.values()]), label='С порогом', color='g')
 #draw_occupancy(energies, occ1, weirods_thres)
 #sdo, ado = sdo_ado(energies, occ1)
 
@@ -296,10 +328,11 @@ draw(np.log([el if el != -1 else 1e7 for el in reached_stats.values()]), label='
 #reached_from_distance(distances, times_reached_stats.values())
 #reached_vs_bnd_dist(times_reached_stats)
 plt.legend()
-plt.title('Распределение времен первого достижения')
-#plt.show()
+#plt.title('Распределение времен первого достижения')
+plt.show()
 
-plt.savefig('../logs/first_reached_repression_100mol.png', figsize=(20, 100), dpi=160)
+#plt.savefig('../logs/scatter_overlapping_100mol.png', figsize=(20, 100), dpi=160)
 
-for i in range(0, len(avail_bnd), 2):
-	print(avail_bnd[i], avail_bnd[i+1])
+
+# for i in range(0, len(avail_bnd), 2):
+# 	print(avail_bnd[i], avail_bnd[i+1])
