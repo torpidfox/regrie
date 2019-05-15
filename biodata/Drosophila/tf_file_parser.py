@@ -10,12 +10,11 @@ tfs = "cad hkb kni gt tll bcd hb Kr".split()
 # 		copy_numbers[i] = 1
 
 
-with open('TF_Drosophila_new1.csv') as f:
+with open('tf_100.csv') as f:
 	df = pd.read_csv(f, sep=';')
 
-print(list(df))
+print(df[['name', 'REPRESSIONPROBABILITY', 'REPLENRIGHT', 'COPYNUMBER']])
 
-print(df[['name', 'REPRESSIONPROBABILITY', 'PWMREPTHRESHOLD']])
 
 is_repressor = {'bcd' : 'false', 'cad' : 'false', 'Kr' : 'false', 'hb' : 'true', 'gt' : 'true', 'kni' : 'true'}
 #copy_number = {tf : 100 for tf in tfs}

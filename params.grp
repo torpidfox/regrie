@@ -22,16 +22,16 @@ EVENT_LIST_SUBGROUP_SIZE = 0;
 EVENT_LIST_USES_FR = true;
 
 #The folder where the result files will be saved.
-OUTPUT_FOLDER = "results_debug_no_thres_repression_100";
+OUTPUT_FOLDER = "results_debug_no_thres_no_repression_100";
 
 #The filename where the output results will be saved. Extension will be automatically added at the end. If this is blank then a random unique name will be generated
 OUTPUT_FILENAME = "drosophila";
 
 #The time interval in seconds after which intermediary results will be printed. If zero is used then no intermediary results will be produced.
-PRINT_INTERMEDIARY_RESULTS_AFTER = 10.0;
+PRINT_INTERMEDIARY_RESULTS_AFTER = 50.0;
 
 #This is true if the occupancy at the end of the simulation is printed and false otherwise.
-PRINT_FINAL_OCCUPANCY = true;
+PRINT_FINAL_OCCUPANCY = false;
 
 #this is true if the simulation is in debug mode (prints all actions to the status file) and false otherwise
 DEBUG_MODE = false;
@@ -217,4 +217,4 @@ TF_REPLENRIGHT = 10;
 PWM_REP_THRESHOLD = 0;
 
 #Probability for a TF-repressor to block the surrounding DNA
-REPRESSION_PROBABILITY = 1;
+REPRESSION_PROBABILITY = 0;

@@ -19,6 +19,7 @@ time = 120
 
 tfs = "cad hkb kni gt tll bcd hb Kr".split()
 is_repressor = {'bcd' : 'false', 'cad' : 'false', 'Kr' : 'false', 'hb' : 'true', 'gt' : 'true', 'kni' : 'true'}
+ignore_names = ['tll', 'hkb']
 rep_len = 125
 
 path_nothres = '/run/media/alisa/Elements/test/reGRiE/results_debug_no_thres_no_repression_100/'
@@ -242,6 +243,9 @@ def overlap_hist(site1, site2, times_reached):
 	frac = [np.log(s1 / s2) for s1, s2 in zip(times_reached[site1], times_reached[site2]) if s1 != -1 and s2 != -1]
 	sns.kdeplot(frac)
 
+def detect_outliers(vals, thres):
+	return [name for name, val in vals.items() if val > thres]
+
 
 
 plotType = 'Total occupancy'
@@ -262,23 +266,23 @@ energies = parse_energy('/run/media/alisa/Elements/test/reGRiE/pwm_energies.txt'
 
 occ1, reached, times_reached = concat(get_data(path_nothres))
 occupied_stats, reached_stats, times_reached_stats = get_mean(occ1, reached, times_reached)
-draw(np.log([el + 2 if el != -1 else 1e7 for el in reached_stats.values()]), label='Без порога')
+#draw(np.log([el for name, el in reached_stats.items() if name.tf not in ignore_names and el != -1]), label='Без порога')
 
 # for tf in tfs:
 # 	sdo_vs_ado= sdo_ado(energies, occupied_stats, times_reached_stats, condition=tf)
 # 	draw_scatterplot(*zip(*sdo_vs_ado), title=', no thres', col='g')
 
 overlap_flag = list(map(lambda s: is_overlapping(s, energies.keys()), energies.keys()))
-repress_flag = list(map(lambda s: is_repressed(s, energies.keys()), energies.keys()))
-print(repress_flag)
-non_overlapping_sites = [site for site, flag in zip(energies.keys(), overlap_flag) if not flag]
+# repress_flag = list(map(lambda s: is_repressed(s, energies.keys()), energies.keys()))
+# print(repress_flag)
+non_overlapping_sites = [site for site, flag in zip(energies.keys(), overlap_flag) if not flag and site.tf not in ignore_names]
 #for tf in tfs:
-# sdo_vs_ado, names = sdo_ado(energies, occupied_stats, times_reached_stats, names=non_overlapping_sites)
-# draw_scatterplot(*zip(*sdo_vs_ado), label='сайты, не имеющие пересечений с другми', names=names)
+sdo_vs_ado, names = sdo_ado(energies, occupied_stats, times_reached_stats, names=non_overlapping_sites)
+draw_scatterplot(*zip(*sdo_vs_ado), label='сайты, не имеющие пересечений с другми', names=names)
 
-# overlapping_sites = [site for site, flag in zip(energies.keys(), overlap_flag) if flag]
-# sdo_vs_ado, names = sdo_ado(energies, occupied_stats, times_reached_stats, names=overlapping_sites)
-# draw_scatterplot(*zip(*sdo_vs_ado), label='сайты, имеющие пересечения с другими', names=names)
+overlapping_sites = [site for site, flag in zip(energies.keys(), overlap_flag) if flag and site.tf not in ignore_names]
+sdo_vs_ado, names = sdo_ado(energies, occupied_stats, times_reached_stats, names=overlapping_sites)
+draw_scatterplot(*zip(*sdo_vs_ado), label='сайты, имеющие пересечения с другими', names=names)
 
 
 
@@ -315,8 +319,8 @@ occupied_stats, reached_stats, times_reached_stats = get_mean(occ2, reached2, ti
 #sdo2, ado, weirods_thres = sdo_ado(energies, occupied_stats)
 #draw_scatterplot(sdo2, ado)
 #print(weirods_thres)
-
-draw(np.log([el + 2 if el != -1 else 1e7 for el in reached_stats.values()]), label='С порогом', color='g')
+# draw(np.log([el + 2 if el != -1 else 1e7 for name, el in reached_stats.items() if name.tf not in ignore_names]), 
+# 	label='С порогом', color='g')
 #draw_occupancy(energies, occ1, weirods_thres)
 #sdo, ado = sdo_ado(energies, occ1)
 

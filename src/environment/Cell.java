@@ -1264,13 +1264,6 @@ public class Cell implements Serializable {
             if (this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value > 0 && this.cellTime < this.totalStopTime && this.cellTime >= this.lastPrintResultsAfter + this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value && this.totalStopTime > this.lastPrintResultsAfter + 2 * this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value) {
                 this.lastPrintResultsAfter += this.ip.PRINT_INTERMEDIARY_RESULTS_AFTER.value;
                 printSteadyStates(this.lastPrintResultsAfter);
-                try {
-                    dna.printOccupnacy(this.cellTime);
-                }
-
-                catch (IOException e) {
-
-                }
             }
 
         }
@@ -1283,13 +1276,6 @@ public class Cell implements Serializable {
         //print steady state info
 
         if ((this.totalStopTime - this.cellTime <= doubleZero)) {
-            try {
-                dna.printOccupnacy(100);
-            }
-
-            catch (IOException e) {
-
-            }
             printFinalDebugInfo(elapsedTimeSec);
         }
 
@@ -1625,7 +1611,7 @@ public class Cell implements Serializable {
             }
             printTargetSitesInformation(this.outputPath, filename);
 
-            printTFspecies(time, false, filename);
+            //printTFspecies(time, false, filename);
 
 
         } catch (Exception e) {
@@ -1698,10 +1684,10 @@ public class Cell implements Serializable {
             try {
                 //Construct the BufferedWriter object
                 if (this.outputPath.isEmpty()) {
-                    bufferFile = new BufferedWriter(new FileWriter(this.outputTargetSiteFile));
+                    bufferFile = new BufferedWriter(new FileWriter(filename));
                 } else {
                     bufferFile = new BufferedWriter(new FileWriter(new File(this.outputPath,
-                            this.outputTargetSiteFile)));
+                           filename)));
                 }
                 //header
                 String str = "\"targetSite\", \"firstReached\", \"timesReached\", \"timeOccupied\", \"isAvailable\"";
