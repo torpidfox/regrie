@@ -1,9 +1,7 @@
 package environment;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.StringTokenizer;
+import java.util.*;
 //import java.util.HashMap;
 //import java.util.PriorityQueue;
 import java.util.Random;
@@ -69,7 +67,7 @@ public class Cell implements Serializable {
     private double nextPointTFstoFollow;
     private double stepPointTFstoFollow;
 
-    public double specificBindingThres;
+    public double[] specificBindingThres;
 
     //output files
     public String outputStatusFile;
@@ -152,7 +150,6 @@ public class Cell implements Serializable {
 
 
         generateOutputFilenames(this.outputParamsFile);
-
 
         //initialise internal parameters
         initialiseInternalParameters();
@@ -1947,18 +1944,23 @@ public class Cell implements Serializable {
     }
 
 
-    public double computeSpecificBindingThreshold() {
-        double minAffinity = 1000;
+    public double[] computeSpecificBindingThreshold() {
+        double[] result = new double[this.TFspecies.length];
+
+        for (int i = 0; i < this.TFspecies.length; i++) {
+            result[i] = 1000;
+        }
 
         for (TargetSite ts : this.tsg.ts) {
-            double TSAffinity = ts.computeTSAffinity(this.dna.strand, this.TFspecies[ts.TFid].pfm);
+            double TSAffinity = ts.computeTSAffinity(this.dna.strand,
+                    this.TFspecies[ts.TFid].pfm);
 
-            if (TSAffinity < minAffinity) {
-                minAffinity = TSAffinity;
+            if (TSAffinity < result[this.TFspecies[ts.TFid].id]) {
+                result[this.TFspecies[ts.TFid].id] = TSAffinity;
             }
         }
 
-        return minAffinity;
+        return result;
     }
 
 

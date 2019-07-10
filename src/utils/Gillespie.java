@@ -25,8 +25,8 @@ public class Gillespie {
 	}
 
 	public static double computeTimeBound(double propensitySum, Random generator){
-		//return propensitySum;
-		return Math.log(generator.nextDouble())*(-propensitySum);
+		return propensitySum;
+		//return Math.log(generator.nextDouble())*(-propensitySum);
 		//return (1/propensitySum)*Math.log
 		// (1/generator.nextDouble());
 	}

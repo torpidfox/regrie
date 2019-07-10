@@ -172,7 +172,7 @@ public class TFRandomWalkEventQueueFRopt  extends TFRandomWalkEventQueue{
 			int nextAction = Constants.NONE;
 			int direction = n.dbp[moleculeID].getDirection();
 
-			double slidingTime = 0;
+			double slidingTime = 1e-10;
 
 			int speciesID = n.dbp[moleculeID].speciesID;
 			boolean isHoppingEvent = false;
@@ -187,14 +187,19 @@ public class TFRandomWalkEventQueueFRopt  extends TFRandomWalkEventQueue{
 						n.affinitiesRL.get(speciesID).get(position);
 
 
-				boolean isTimeZero = affinity < n.specificBindingThres;
+				boolean isTimeZero = affinity < n.specificBindingThres[speciesID];
 
 				nextTime = isTimeZero ? 0:
-						Gillespie.computeTimeBound( n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
+						Gillespie.computeTimeBound(n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
 			}
 			else {
 				nextTime = Gillespie.computeTimeBound(n.dbp[moleculeID].getMoveRate(), n.randomGenerator);
 			}
+
+			if (nextTime > 0) {
+				slidingTime = 1e-5;
+			}
+
 			double randomNumber=n.randomGenerator.nextDouble()*n.TFspecies[speciesID].slideRightNo;
 			if(randomNumber < n.TFspecies[speciesID].jumpNo){
 				nextAction = Constants.EVENT_TF_RANDOM_WALK_JUMP;

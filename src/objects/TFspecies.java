@@ -326,6 +326,7 @@ public class TFspecies implements Serializable {
         sizeInBP = parseDBD(n, dbd);
 
         this.copyNumber = copyNumber;
+
         this.es = es;
 
 

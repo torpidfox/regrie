@@ -870,19 +870,6 @@ public class DNA implements Serializable {
     }
 
     public void debugPrinting(Cell n) {
-        try {
-            printDNAstrand("/run/media/alisa/Elements/test/reGRiE/", "available_dna.txt");
-        } catch (FileNotFoundException e) {
-            // do something
-        }
-
-        try {
-            printAvailabilityBoundaries();
-        } catch (IOException e) {
-            // do something
-        }
-        System.out.println(n.tsg.ts.size());
-
         ArrayList<String> TSenergiesInfo = new ArrayList<>();
         ArrayList<Double> TSenergies = new ArrayList<>();
         double TSenergy2 = 0;
@@ -893,6 +880,7 @@ public class DNA implements Serializable {
             TSinfo += ts.toString() + " ";
             TSinfo += ts.region.start + " " + ts.region.end + " ";
             int len = 0;
+            double pwmScore = 0;
 
             double TSenergy1 = TFavgMoveRate[ts.TFid][ts.relStart][ts.region.direction];
 
@@ -900,17 +888,25 @@ public class DNA implements Serializable {
                 TSenergy2 = CellUtils.computeTFAffinityLR(strand, ts.relStart, n.TFspecies[ts.TFid].pfm, len, false);
                 for (int j = (int) ts.region.start; j < ts.region.end; j++)
                     DNAseq += String.valueOf(BasePairs.bps[strand[j]]);
+                pwmScore = CellUtils.computeTFAffinityLR(strand, ts.relStart, n.TFspecies[ts.TFid].pfm, len, true);
+
+
             } else if (ts.region.direction == 1) {
                 TSenergy2 = CellUtils.computeTFAffinityRL(strand, ts.relStart, n.TFspecies[ts.TFid].pfm, len, false);
 
                 for (int j = (int) ts.region.start; j < ts.region.end; j++)
                     DNAseq += String.valueOf(BasePairs.bps[strand[j]]);
+
+                pwmScore = CellUtils.computeTFAffinityRL(strand, ts.relStart, n.TFspecies[ts.TFid].pfm, len, true);
+
             }
 
             TSinfo += String.valueOf(TSenergy1);
             TSinfo += DNAseq;
             TSinfo += " ";
             TSinfo += String.valueOf(TSenergy2);
+            TSinfo += " ";
+            TSinfo += String.valueOf(pwmScore);
             TSenergies.add(TSenergy1);
 
             TSenergiesInfo.add(TSinfo);
@@ -1631,7 +1627,7 @@ public class DNA implements Serializable {
 
         //AD: take into account boundaries of open regions on the DNA
         int rightBoundary = findRightBoundary(n, newPosition);
-        if (newPosition >= rightBoundary - proteinSize) {
+        if (newPosition > rightBoundary - proteinSize) {
             canSlide = Constants.NONE;
         }
 

@@ -237,7 +237,9 @@ public class TargetSite implements Serializable {
      */
 
     public double computeTSAffinity(byte[] DNAseq, PFM pfm) {
-        return this.region.direction == 0 ? this._computeTSAffinityLR(DNAseq, pfm) : this._computeTSAffinityRL(DNAseq, pfm);
+        return this.region.direction == 0 ?
+                this._computeTSAffinityLR(DNAseq, pfm) :
+                this._computeTSAffinityRL(DNAseq, pfm);
     }
 
 }
